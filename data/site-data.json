@@ -1,0 +1,335 @@
+{
+  "visits": 1279,
+  "messages": 25,
+  "statsHistory": [
+    {
+      "date": "2026-01-11",
+      "visits": 140,
+      "subs": 2,
+      "messages": 1
+    },
+    {
+      "date": "2026-01-12",
+      "visits": 165,
+      "subs": 1,
+      "messages": 3
+    },
+    {
+      "date": "2026-01-13",
+      "visits": 132,
+      "subs": 4,
+      "messages": 0
+    },
+    {
+      "date": "2026-01-14",
+      "visits": 189,
+      "subs": 3,
+      "messages": 5
+    },
+    {
+      "date": "2026-01-15",
+      "visits": 210,
+      "subs": 5,
+      "messages": 2
+    },
+    {
+      "date": "2026-01-16",
+      "visits": 195,
+      "subs": 2,
+      "messages": 4
+    },
+    {
+      "date": "2026-01-17",
+      "visits": 219,
+      "subs": 6,
+      "messages": 9
+    },
+    {
+      "date": "2026-01-18",
+      "visits": 26,
+      "subscribers": 1,
+      "messages": 0
+    },
+    {
+      "date": "2026-02-06",
+      "visits": 1,
+      "subscribers": 2,
+      "messages": 0
+    }
+  ],
+  "hero": {
+    "badge": "Ingénierie de Précision & Esthétique Future",
+    "title": "BADIOR",
+    "subtitle": "Ouattara",
+    "description": "Architecte Digital spécialisé dans la conception d'écosystèmes numériques monumentaux, alliant rigueur mathématique et design immersif.",
+    "primaryCTA": "Explorer les Réalisations",
+    "secondaryCTA": "Consultation Stratégique"
+  },
+  "about": {
+    "titleMain": "Héritage",
+    "titleSub": "Architectural",
+    "quote": "Construire le code comme on érige une structure, avec une intention pure et une exécution sans faille.",
+    "description": "Mon approche de l'ingénierie logicielle transcende le simple développement; je conçois des solutions pérennes où chaque pixel et chaque fonction sont les briques d'une expérience utilisateur d'exception.",
+    "profileImage": "/uploads/1768703448637-profiljpg.jpg"
+  },
+  "bento": [
+    {
+      "title": "Le Parcours",
+      "icon": "Briefcase",
+      "content": "Plus de 5 ans d'expertise dans la transformation de visions complexes en architectures logicielles élégantes.",
+      "className": "md:col-span-2 md:row-span-1",
+      "bg": "bg-indigo-500/10"
+    },
+    {
+      "title": "Formation",
+      "icon": "GraduationCap",
+      "content": "Master en Architecture des Systèmes d'Information - Spécialisation Systèmes Distribués.",
+      "className": "md:col-span-1 md:row-span-1",
+      "bg": "bg-fuchsia-500/10"
+    },
+    {
+      "title": "Vision",
+      "icon": "Terminal",
+      "content": "L'ingénierie est l'art de la structure. Je bâtis pour la performance et la scalabilité.",
+      "className": "md:col-span-1 md:row-span-2",
+      "bg": "bg-cyan-500/10"
+    },
+    {
+      "title": "Localisation",
+      "icon": "MapPin",
+      "content": "Opérant depuis Bobo-Dioulasso, Burkina Faso, avec une portée d'intervention internationale.",
+      "className": "md:col-span-2 md:row-span-1",
+      "bg": "bg-emerald-500/10"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Photoshop",
+      "description": "Maîtrise complète du logiciel. Retouche photo, composition, effets avancés et création de visuels profesionnels pour le web et l'impression.",
+      "expertise": "Expert",
+      "icon": "Photoshop",
+      "color": {
+        "from": "from-indigo-500",
+        "to": "to-indigo-600",
+        "accent": "indigo"
+      }
+    },
+    {
+      "name": "Illustrator",
+      "description": "Conception graphique vectorielle, création de logos, illustrations originales et design de marques avec une grande précision technique.",
+      "expertise": "Expert",
+      "icon": "Illustrator",
+      "color": {
+        "from": "from-violet-500",
+        "to": "to-violet-600",
+        "accent": "violet"
+      }
+    },
+    {
+      "name": "HTML",
+      "description": "Structuration sémantique optimale, accessibilité Web (WCAG), et best practices modernes pour une base solide et performante.",
+      "expertise": "Expert",
+      "icon": "HTML",
+      "color": {
+        "from": "from-orange-500",
+        "to": "to-orange-600",
+        "accent": "orange"
+      }
+    },
+    {
+      "name": "CSS",
+      "description": "Stylisation avancée, layouts modernes (Flexbox, Grid), animations fluides, responsive design et TailwindCSS pour des interfaces magnifiques.",
+      "expertise": "Expert",
+      "icon": "CSS",
+      "color": {
+        "from": "from-blue-500",
+        "to": "to-blue-600",
+        "accent": "blue"
+      }
+    },
+    {
+      "name": "JavaScript",
+      "description": "Programmation fonctionnelle et orientée objet, manipulation du DOM, API modernes et optimisation des performances côté client.",
+      "expertise": "Expert",
+      "icon": "JavaScript",
+      "color": {
+        "from": "from-yellow-500",
+        "to": "to-yellow-600",
+        "accent": "yellow"
+      }
+    },
+    {
+      "name": "Python",
+      "description": "Développement backend robuste, scripts d'automatisation, analyse de données et intégration d'API tierces pour applications complètes.",
+      "expertise": "Avancé",
+      "icon": "Python",
+      "color": {
+        "from": "from-green-500",
+        "to": "to-green-600",
+        "accent": "green"
+      }
+    },
+    {
+      "name": "React",
+      "description": "Architecture de composants réutilisables, state management avancé, hooks personnalisés et optimisation du rendering pour performance maximale.",
+      "expertise": "Expert",
+      "icon": "React",
+      "color": {
+        "from": "from-cyan-500",
+        "to": "to-cyan-600",
+        "accent": "cyan"
+      }
+    },
+    {
+      "name": "IA (Intelligence Artificielle)",
+      "description": "Conception et intégration de modèles d'IA pour automatisation, traitement du langage naturel, et systèmes de recommandation.",
+      "expertise": "Avancé",
+      "icon": "IA (Intelligence Artificielle)",
+      "color": {
+        "from": "from-emerald-500",
+        "to": "to-emerald-600",
+        "accent": "emerald"
+      }
+    },
+    {
+      "name": "SQL",
+      "description": "Requêtes optimisées, design de bases de données, jointures complexes et gestion performante des données pour applications scalables.",
+      "expertise": "Avancé",
+      "icon": "SQL",
+      "color": {
+        "from": "from-pink-500",
+        "to": "to-pink-600",
+        "accent": "pink"
+      }
+    },
+    {
+      "name": "TypeScript",
+      "description": "Typage strict pour code robuste et maintenable, interfaces complexes, generics et tooling avancé pour prévenir les erreurs.",
+      "expertise": "Expert",
+      "icon": "Code",
+      "color": {
+        "from": "from-fuchsia-500",
+        "to": "to-fuchsia-600",
+        "accent": "fuchsia"
+      }
+    }
+  ],
+  "contact": {
+    "email": "ouattarabadiori20@gmail.com",
+    "location": "Bobo-Dioulasso, Burkina Faso",
+    "linkedin": "linkedin.com/in/badior-o",
+    "github": "github.com/badior-o"
+  },
+  "projects": [
+    {
+      "id": 1768704074441,
+      "title": "Mind Graphix Solution",
+      "category": "Site Web",
+      "description": "Agence digitale de création de sites web et applications mobiles sur mesure.",
+      "tools": [
+        "Next.js",
+        "TailwindCSS",
+        "Framer Motion"
+      ],
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+      "year": 2026,
+      "role": "Dev Fullstack / Chef de projet"
+    },
+    {
+      "id": "vanguard-brand",
+      "title": "Vanguard Brand Design",
+      "category": "Graphisme",
+      "description": "Identité visuelle monumentale pour une marque de luxe technologique.",
+      "tools": [
+        "Photoshop",
+        "Illustrator",
+        "After Effects"
+      ],
+      "image": "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80",
+      "year": 2025,
+      "role": "Lead Designer"
+    },
+    {
+      "id": "nexus-mobile",
+      "title": "Nexus Mobile Suite",
+      "category": "Application",
+      "description": "Écosystème mobile pour la gestion domotique par IA.",
+      "tools": [
+        "React Native",
+        "Firebase",
+        "Node.js"
+      ],
+      "image": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80",
+      "year": 2025,
+      "role": "Lead App Developer"
+    },
+    {
+      "id": "elysium-estates",
+      "title": "Elysium Estates",
+      "category": "Site Web",
+      "description": "Plateforme immobilière haut de gamme avec visites virtuelles 3D.",
+      "tools": [
+        "Three.js",
+        "React",
+        "MongoDB"
+      ],
+      "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
+      "year": 2024,
+      "role": "Front-end Engineer"
+    },
+    {
+      "id": "aegis-cyber",
+      "title": "Aegis Cyber-Security",
+      "category": "Graphisme",
+      "description": "Branding et interface pour un leader de la cybersécurité.",
+      "tools": [
+        "Figma",
+        "Illustrator",
+        "React"
+      ],
+      "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
+      "year": 2024,
+      "role": "Art Director"
+    },
+    {
+      "id": "stratosphere-cloud",
+      "title": "Stratosphere Cloud Portal",
+      "category": "Application",
+      "description": "Dashboard analytique pour infrastructures cloud distribuées.",
+      "tools": [
+        "Node.js",
+        "Grafana",
+        "Kubernetes"
+      ],
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
+      "year": 2026,
+      "role": "Backend Architect"
+    }
+  ],
+  "subscribers": [
+    {
+      "email": "ouattarabadiori20@gmail.com",
+      "date": "2025-11-29T20:06:44.493Z"
+    },
+    {
+      "email": "mindgraphixsolution@gmail.com",
+      "date": "2026-01-18T02:46:47.074Z"
+    }
+  ],
+  "pendingSubscribers": [],
+  "receivedMessages": [
+    {
+      "id": 1768706877993,
+      "date": "2026-01-18T03:27:57.993Z",
+      "name": "DIOR BAD",
+      "email": "mindgraphixsolution@gmail.com",
+      "company": "BHJ BX",
+      "projectType": "Recrutement / Poste: TI",
+      "budget": "N/A",
+      "timeline": "Permanent / Mission",
+      "message": "test",
+      "status": "unread",
+      "recruitment": true
+    }
+  ]
+}
