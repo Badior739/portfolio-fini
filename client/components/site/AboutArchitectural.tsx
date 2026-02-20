@@ -75,14 +75,7 @@ export function AboutArchitectural({ data, bento }: { data?: AboutContent; bento
             <div className="relative group max-w-md mx-auto lg:max-w-none">
               <Profile3DLayered image={about.profileImage} />
             </div>
-            <div className="mt-8 space-y-4 text-center lg:hidden">
-              <h3 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-                "{about.quote}"
-              </h3>
-              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
-                {about.description}
-              </p>
-            </div>
+
           </div>
 
           <div className="lg:col-span-7 space-y-12 md:space-y-20 order-2 lg:order-2">

@@ -107,16 +107,7 @@ export function MobileDock({ onOpenRecruit }: { onOpenRecruit: () => void }) {
           );
         })}
         
-        {/* Recruit Button (Mobile Dock) */}
-        <button
-          onClick={handleRecruitClick}
-          className="relative flex flex-col items-center justify-center w-11 h-11 rounded-xl transition-all group"
-          title={t('nav.recruit')}
-        >
-          <div className="relative z-10 flex items-center justify-center w-full h-full rounded-xl bg-primary/20 text-primary border border-primary/50 shadow-[0_0_15px_hsl(var(--primary)/0.5)] group-hover:shadow-[0_0_25px_hsl(var(--primary)/0.8)] transition-all duration-300">
-            <Rocket size={20} strokeWidth={1.5} className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </button>
+
       </motion.div>
     </div>
   );
