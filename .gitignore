@@ -24,7 +24,8 @@ dist-ssr
 *.sw?
 
 .config/
-!.env
+.env
+.env.*
 
 # Temporary files
 tmp/
