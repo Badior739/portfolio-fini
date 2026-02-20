@@ -1,43 +1,47 @@
 import { motion } from "framer-motion";
-import { Briefcase, GraduationCap, MapPin, Award, Terminal } from "lucide-react";
+import { Award, Briefcase, GraduationCap, MapPin, Terminal, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BentoItem } from "@shared/api";
+import { useLanguage } from "@/context/LanguageContext";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   Briefcase, GraduationCap, MapPin, Award, Terminal
 };
 
-const defaultBento = [
-  {
-    title: "Le Parcours",
-    icon: "Briefcase",
-    content: "Plus de 5 ans à transformer des idées complexes en architectures logicielles élégantes.",
-    className: "md:col-span-2 md:row-span-1",
-    bg: "bg-indigo-500/10"
-  },
-  {
-    title: "Formation",
-    icon: "GraduationCap",
-    content: "Master en Architecture des Systèmes d'Information.",
-    className: "md:col-span-1 md:row-span-1",
-    bg: "bg-fuchsia-500/10"
-  },
-  {
-    title: "Ma Vision",
-    icon: "Terminal",
-    content: "L'ingénierie n'est pas seulement du code, c'est l'art de construire des structures pérennes.",
-    className: "md:col-span-1 md:row-span-2",
-    bg: "bg-cyan-500/10"
-  },
-  {
-    title: "Localisation",
-    icon: "MapPin",
-    content: "Opérant depuis Bobo-Dioulasso, Burkina Faso, avec une portée d'intervention internationale.",
-    className: "md:col-span-2 md:row-span-1",
-    bg: "bg-emerald-500/10"
-  }
-];
+export function ArchitecturalBento({ items }: { items?: BentoItem[] }) {
+  const { t } = useLanguage();
 
-export function ArchitecturalBento({ items }: { items?: any[] }) {
+  const defaultBento = [
+    {
+      title: t('bento.journey.title'),
+      icon: "Briefcase",
+      content: t('bento.journey.content'),
+      className: "md:col-span-2 md:row-span-1",
+      bg: "bg-indigo-500/10"
+    },
+    {
+      title: t('bento.education.title'),
+      icon: "GraduationCap",
+      content: t('bento.education.content'),
+      className: "md:col-span-1 md:row-span-1",
+      bg: "bg-fuchsia-500/10"
+    },
+    {
+      title: t('bento.vision.title'),
+      icon: "Terminal",
+      content: t('bento.vision.content'),
+      className: "md:col-span-1 md:row-span-2",
+      bg: "bg-cyan-500/10"
+    },
+    {
+      title: t('bento.location.title'),
+      icon: "MapPin",
+      content: t('bento.location.content'),
+      className: "md:col-span-2 md:row-span-1",
+      bg: "bg-emerald-500/10"
+    }
+  ];
+
   const displayItems = items?.length ? items : defaultBento;
   
   return (

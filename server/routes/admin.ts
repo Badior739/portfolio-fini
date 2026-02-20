@@ -1,373 +1,357 @@
 import { RequestHandler } from "express";
-import nodemailer from "nodemailer";
-import fs from "fs";
-import path from "path";
 import crypto from "crypto";
-import { createTransporter, getSmtpConfig } from "../config/smtp";
-import { SiteData, Admin } from "@shared/api";
+import { createTransporter } from "../config/smtp";
+import { Admin, ContactFormData, ReceivedMessage, SiteData, StatsEntry, Appointment } from "@shared/api";
+import { signToken } from "../middleware/auth";
+import { 
+  loadData, 
+  updateContent, 
+  incrementVisits, 
+  incrementMessages, 
+  addMessage, 
+  addAppointment, 
+  resetStats 
+} from "../lib/storage";
 
-// Fix process.cwd access with any cast
-const DATA_FILE = path.join((process as any).cwd(), "data", "site-data.json");
-
-// Ensure data directory exists
-function ensureDataDir() {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+function verifyAdminPassword(password: string, admin?: Admin): boolean {
+  if (!admin || !admin.salt || !admin.hash) return false;
+  const hash = crypto.pbkdf2Sync(password, admin.salt, 1000, 64, 'sha512').toString('hex');
+  return hash === admin.hash;
 }
 
-// Load data from JSON file
-function loadData(): SiteData {
-  ensureDataDir();
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-    }
-  } catch (e) {
-    console.error("Error loading site data:", e);
-  }
-  return {
-    visits: 0,
-    messages: 0,
-    skills: [],
-    projects: [],
-    subscribers: [],
-  };
-}
-
-// Save data to JSON file
-function saveData(data: SiteData) {
-  ensureDataDir();
-  try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-  } catch (e) {
-    console.error("Error saving site data:", e);
-  }
-}
-
-function verifyAdminPassword(candidate: string) {
-  const data = loadData();
-  const admin: Admin | undefined = data.admin;
-  if (admin && admin.salt && admin.hash) {
-    try {
-      // Fix Buffer access with any cast
-      const derived = crypto.scryptSync(candidate, (global as any).Buffer.from(admin.salt, 'hex'), 64).toString('hex');
-      return derived === admin.hash;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Dynamic check for env var
-  const envPassword = process.env.ADMIN_PASSWORD || "admin123";
-  
-  // Also check the specific password the user requested as a hard fallback
-  if (candidate === "MGS_Admin_2026!") return true;
-  
-  return candidate === envPassword;
-}
-
-// Temporary in-memory store for OTPs
-// In a production environment, this should ideally be in a database or Redis
-const otpStore: Record<string, { code: string; expires: number }> = {};
-
-function generateOTP() {
-  return crypto.randomInt(100000, 999999).toString();
-}
-
-export const handleAdminLogin: RequestHandler = async (req, res) => {
-  const { password } = req.body;
-  if (!password) return res.status(400).json({ error: 'Password required' });
-  
-  if (verifyAdminPassword(password)) {
-    const otp = generateOTP();
-    const expires = Date.now() + 5 * 60 * 1000; // 5 minutes
-    
-    // For simplicity, we use a single key since there's only one admin
-    otpStore['admin'] = { code: otp, expires };
-
-    const transporter = createTransporter();
-    if (transporter) {
-      const cfg = getSmtpConfig();
-      if (cfg.to) {
-        try {
-          await transporter.sendMail({
-            from: `${cfg.fromName || "Portfolio Admin"} <${cfg.user}>`,
-            to: cfg.to,
-            subject: `Code de vérification Admin - ${otp}`,
-            text: `Votre code de vérification est : ${otp}\nIl expirera dans 5 minutes.`,
-            html: `
-              <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; max-width: 500px;">
-                <h2 style="color: #8b5cf6;">Authentification Administrateur</h2>
-                <p>Un accès a été tenté pour votre tableau de bord.</p>
-                <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;">
-                  ${otp}
-                </div>
-                <p style="font-size: 12px; color: #666;">Ce code expire dans 5 minutes.</p>
-              </div>
-            `
-          });
-          
-          // EMERGENCY LOG: Allows the developer to see the code in the terminal
-          console.log(`[AUTH] 2FA Code for admin: ${otp}`);
-          
-          return res.json({ requires2FA: true });
-        } catch (err) {
-          console.error("Failed to send 2FA email:", err);
-          return res.status(500).json({ error: "Failed to send verification code" });
-        }
-      }
-    }
-    
-    // Fallback if SMTP is not configured: in a real app this is a security risk, 
-    // but for this dev portfolio we might want to log it or handle it.
-    // For now, we'll require SMTP for 2FA to work.
-    return res.status(500).json({ error: "SMTP non configuré pour la 2FA" });
-  }
-  
-  return res.status(401).json({ error: 'Invalid password' });
-};
-
-export const handleAdminVerify2FA: RequestHandler = (req, res) => {
-  const { code } = req.body;
-  const stored = otpStore['admin'];
-
-  if (!stored) {
-    return res.status(400).json({ error: "Aucune session 2FA en cours" });
-  }
-
-  if (Date.now() > stored.expires) {
-    delete otpStore['admin'];
-    return res.status(401).json({ error: "Code expiré" });
-  }
-
-  if (code === stored.code) {
-    delete otpStore['admin'];
-    return res.json({ success: true });
-  }
-
-  return res.status(401).json({ error: "Code incorrect" });
-};
-
-export const handleSetAdminPassword: RequestHandler = (req, res) => {
-  const current = req.headers['x-admin-password'] as string || req.body.current;
-  const next = req.body.next;
-  if (!current || !next) return res.status(400).json({ error: 'current and next required' });
-  if (!verifyAdminPassword(current)) return res.status(401).json({ error: 'Invalid current password' });
-  const data = loadData();
+function setAdminPassword(password: string): Admin {
   const salt = crypto.randomBytes(16).toString('hex');
-  // Fix Buffer access with any cast
-  const hash = crypto.scryptSync(next, (global as any).Buffer.from(salt, 'hex'), 64).toString('hex');
-  data.admin = { salt, hash };
-  saveData(data);
-  return res.json({ success: true });
-};
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return { salt, hash };
+}
 
-export const handleGetStats: RequestHandler = (req, res) => {
-  const data = loadData();
+export const handleGetStats: RequestHandler = async (req, res) => {
+  const data = await loadData();
   res.json({
-    visits: data.visits || 0,
-    messages: data.messages || 0,
-    subscribers: data.subscribers?.length || 0,
-    statsHistory: data.statsHistory || []
+    visits: data.visits,
+    messages: data.messages,
+    subscribers: data.subscribers.length,
+    history: data.statsHistory
   });
 };
 
-function ensureCurrentDayStats(data: SiteData): StatsEntry {
-  const today = new Date().toISOString().split('T')[0];
-  if (!data.statsHistory) data.statsHistory = [];
-  
-  let entry = data.statsHistory.find((s: StatsEntry) => s.date === today);
-  if (!entry) {
-    // Keep only last 14 days
-    if (data.statsHistory.length > 14) data.statsHistory.shift();
-    
-    entry = { date: today, visits: 0, subscribers: data.subscribers?.length || 0, messages: 0 };
-    data.statsHistory.push(entry);
-  }
-  return entry;
-}
-
-export const handleIncrementVisit: RequestHandler = (req, res) => {
-  const data = loadData();
-  data.visits = (data.visits || 0) + 1;
-  const entry = ensureCurrentDayStats(data);
-  entry.visits++;
-  saveData(data);
-  res.json({ visits: data.visits, history: data.statsHistory });
-};
-
-export const handleIncrementMessage: RequestHandler = (req, res) => {
-  const data = loadData();
-  data.messages = (data.messages || 0) + 1;
-  const entry = ensureCurrentDayStats(data);
-  entry.messages++;
-  saveData(data);
-  res.json({ messages: data.messages, history: data.statsHistory });
-};
-
-export const handleGetContent: RequestHandler = (req, res) => {
-  const data = loadData();
-  res.json({
+export const handleGetPublicContent: RequestHandler = async (req, res) => {
+  const data = await loadData();
+  const publicData = {
     hero: data.hero,
     about: data.about,
     bento: data.bento,
-    skills: data.skills || [],
-    projects: data.projects || [],
+    skills: data.skills,
+    projects: data.projects,
+    testimonials: data.testimonials,
+    experiences: data.experiences,
     contact: data.contact,
-    receivedMessages: data.receivedMessages || []
-  });
-};
-
-export const handleSaveContent: RequestHandler = (req, res) => {
-  const { password, ...content }: { password?: string } & Partial<SiteData> = req.body;
-  if (!verifyAdminPassword(password || "")) {
-    return res.status(401).json({ error: "Invalid password" });
-  }
-
-  const data = loadData();
-  
-  // Update only provided keys
-  (Object.keys(content) as Array<keyof SiteData>).forEach(key => {
-    if (key !== 'password') { // Exclude password from content update
-      (data as any)[key] = content[key];
+    settings: {
+        siteTitle: data.settings?.siteTitle,
+        siteDescription: data.settings?.siteDescription,
+        siteKeywords: data.settings?.siteKeywords
     }
-  });
-  
-  saveData(data);
-
-  res.json({ success: true });
+  };
+  res.json(publicData);
 };
 
-const premiumEmailTemplate = (subject: string, body: string) => `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { background-color: #050505; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; padding: 40px; }
-    .container { max-width: 600px; margin: 0 auto; background: #0a0a0c; border: 1px solid #1a1a1c; border-radius: 24px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-    .header { text-align: center; border-bottom: 1px solid #1a1a1c; padding-bottom: 30px; margin-bottom: 30px; }
-    .logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; color: #fff; }
-    .content { line-height: 1.6; color: rgba(255,255,255,0.7); font-size: 16px; }
-    .footer { margin-top: 40px; padding-top: 30px; border-top: 1px solid #1a1a1c; text-align: center; color: rgba(255,255,255,0.3); font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">Cosmos <span style="color: #666;">Architecture</span></div>
-    </div>
-    <div class="content">
-      <h1 style="color: #fff; margin-bottom: 20px;">${subject}</h1>
-      <p>${body.replace(/\n/g, '<br>')}</p>
-    </div>
-    <div class="footer">
-      © ${new Date().getFullYear()} BADIOR Ouattara • Architecte Digital & Strategist
-    </div>
-  </div>
-</body>
-</html>
-`;
-
-export const handleBroadcastEmail: RequestHandler = async (req, res) => {
-  const { password, subject, body } = req.body;
-  if (!verifyAdminPassword(password)) return res.status(401).json({ error: "Unauthorized" });
-
-  const data = loadData();
-  const subscribers = data.subscribers || [];
-  if (subscribers.length === 0) return res.status(400).json({ error: "No subscribers found" });
-
-  try {
-    const transporter = await createTransporter();
-    const html = premiumEmailTemplate(subject, body);
-    
-    // Sequential send to avoid rate limiting and allow better logging
-    let successCount = 0;
-    for (const sub of subscribers) {
-      try {
-        await transporter.sendMail({
-          from: `"BADIOR Ouattara" <${process.env.SMTP_USER}>`,
-          to: sub.email,
-          subject: subject,
-          html: html
-        });
-        successCount++;
-        // Small delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-      } catch (err) {
-        console.error(`Failed to broadcast to ${sub.email}:`, err);
-      }
-    }
-
-    res.json({ success: true, count: successCount });
-  } catch (error) {
-    console.error("Broadcast error:", error);
-    res.status(500).json({ error: "Failed to broadcast emails" });
-  }
+export const handleIncrementVisit: RequestHandler = async (req, res) => {
+  const visits = await incrementVisits();
+  res.json({ success: true, visits });
 };
+
+export const handleIncrementMessage: RequestHandler = async (req, res) => {
+  const messages = await incrementMessages();
+  res.json({ success: true, messages });
+};
+
+import { EmailTemplates } from "../lib/email-templates";
 
 export const handleContactSubmission: RequestHandler = async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message, company, projectType, budget, timeline, recruitment } = req.body;
   
   if (!name || !email || !message) {
-    return res.status(400).json({ error: "Required fields missing" });
+    return res.status(400).json({ error: "Champs requis manquants" });
   }
 
-  const data = loadData();
-  const newMessage = {
+  const newMessage: ReceivedMessage = {
     id: Date.now(),
     date: new Date().toISOString(),
     name,
     email,
     message,
-    status: 'unread'
+    status: 'unread',
+    company,
+    projectType,
+    budget,
+    timeline,
+    recruitment: !!recruitment
   };
 
-  data.receivedMessages = data.receivedMessages || [];
-  data.receivedMessages.push(newMessage);
-  data.messages = (data.messages || 0) + 1;
-  saveData(data);
+  await addMessage(newMessage);
 
+  // Send email notification
   try {
-     const transporter = await createTransporter();
-     await transporter.sendMail({
-       from: `\"BADIOR Ouattara\" <${process.env.SMTP_USER}>`,
+    const transporter = await createTransporter();
+    
+    // Notify Admin
+    await transporter.sendMail({
+      from: `"Contact Form" <${process.env.SMTP_USER}>`,
+      to: process.env.SMTP_USER,
+      subject: `Nouveau message de ${name}`,
+      text: `De: ${name} (${email})\nMessage: ${message}`, // Fallback text
+      html: EmailTemplates.adminContactNotification({
+        name,
+        email,
+        company,
+        message,
+        projectType,
+        budget,
+        timeline
+      })
+    });
+
+    // Auto-reply to user
+    await transporter.sendMail({
+       from: `"BADIOR Ouattara" <${process.env.SMTP_USER}>`,
        to: email,
-       subject: "Message bien reçu - BADIOR Ouattara",
-       html: `
-         <div style="background-color: #050505; color: #ffffff; font-family: sans-serif; padding: 40px; border-radius: 20px;">
-           <h1 style="color: #fff; border-bottom: 1px solid #333; padding-bottom: 20px;">Merci pour votre message,</h1>
-           <p style="color: #ccc; line-height: 1.6;">Bonjour ${name},</p>
-           <p style="color: #ccc; line-height: 1.6;">J'ai bien reçu votre message et je vous répondrai dans les plus brefs délais.</p>
-           <div style="background: #111; padding: 20px; border-radius: 10px; border-left: 3px solid #8b5cf6; margin: 20px 0;">
-             <p style="color: #999; font-size: 13px; margin: 0;"><strong>Votre message :</strong></p>
-             <p style="color: #ccc; margin-top: 10px;">${message}</p>
-           </div>
-           <br>
-           <p style="color: #666; font-size: 11px;">BADIOR Ouattara • Architecte Digital</p>
-         </div>
-       `
-     });
+       subject: "Confirmation de réception - BADIOR Ouattara",
+       text: `Bonjour ${name}, merci pour votre message. Je reviens vers vous très vite.`, // Fallback text
+       html: EmailTemplates.contactConfirmation(name, projectType)
+    });
+
   } catch (err) {
-     console.error("Failed to send confirmation email:", err);
+    console.error("Failed to send email notification", err);
   }
 
   res.json({ success: true });
 };
 
-export const handleResetStats: RequestHandler = (req, res) => {
-  const { password } = req.body;
+export const handleGetContent: RequestHandler = async (req, res) => {
+  const data = await loadData();
+  // Filter out sensitive data if needed, but for now return full siteData as requested
+  // except maybe admin credentials
+  const safeData = { ...data };
+  delete (safeData as any).admin;
+  res.json(safeData);
+};
 
-  // Use verifyAdminPassword to allow either hashed admin in data file or env var
-  if (!verifyAdminPassword(password)) {
-    return res.status(401).json({ error: "Invalid password" });
+export const handleSaveContent: RequestHandler = async (req, res) => {
+  // Auth middleware handles verification
+  const content = req.body;
+  // Use updateContent to merge
+  await updateContent(content);
+  res.json({ success: true });
+};
+
+export const handleResetStats: RequestHandler = async (req, res) => {
+  await resetStats();
+  res.json({ success: true });
+};
+
+export const handleAdminLogin: RequestHandler = async (req, res) => {
+  const { password } = req.body;
+  const data = await loadData();
+  
+  // Backdoor removed for security
+  
+  if (!data.admin) {
+    // First time setup or no admin set
+    // Only allow setup if NO admin exists
+    return res.status(401).json({ error: "Administrateur non configuré. Veuillez utiliser la procédure d'installation." });
   }
 
-  const data = loadData();
-  data.visits = 0;
-  data.messages = 0;
-  saveData(data);
+  if (verifyAdminPassword(password, data.admin)) {
+    // Check if 2FA is enabled
+    if (data.settings?.enable2FA) {
+       // Generate OTP
+       const otp = crypto.randomInt(100000, 999999).toString();
+       const expires = Date.now() + 5 * 60 * 1000; // 5 minutes
+       
+       // Save OTP to admin data
+       data.admin.otp = otp;
+       data.admin.otpExpires = expires;
+       await updateContent({ admin: data.admin });
+       
+       // Send OTP via email
+       try {
+         const transporter = await createTransporter();
+         // If admin email is not set, use SMTP_USER or fallback to a default dev email for testing if env not set
+         const adminEmail = data.contact?.email || process.env.SMTP_USER || "ouattarabadiori20@gmail.com";
+         
+         if (transporter) {
+            console.log(`Sending OTP ${otp} to ${adminEmail}`);
+            await transporter.sendMail({
+              from: `"Security System" <${process.env.SMTP_USER}>`,
+              to: adminEmail,
+              subject: "Votre Code de Sécurité Admin",
+              html: `
+                <div style="font-family: sans-serif; padding: 20px; color: #333;">
+                  <h2>Authentification Admin</h2>
+                  <p>Voici votre code de vérification à usage unique :</p>
+                  <h1 style="font-size: 32px; letter-spacing: 5px; color: #000;">${otp}</h1>
+                  <p style="font-size: 12px; color: #666;">Ce code expire dans 5 minutes.</p>
+                </div>
+              `
+            });
+         } else {
+            console.warn("SMTP Transporter not available. OTP logged to console:", otp);
+         }
+         return res.json({ success: true, requires2FA: true });
+       } catch (e) {
+         console.error("Failed to send OTP:", e);
+         // Fallback if email fails? No, security first.
+         return res.status(500).json({ error: "Echec de l'envoi du code 2FA" });
+       }
+    }
+    
+    // Generate real JWT token
+    const token = signToken({ role: 'admin' });
+    return res.json({ success: true, token });
+  }
+  
+  return res.status(401).json({ error: "Mot de passe invalide" });
+};
 
+export const handleAdminVerify2FA: RequestHandler = async (req, res) => {
+  const { code } = req.body;
+  const data = await loadData();
+  
+  if (!data.admin || !data.admin.otp || !data.admin.otpExpires) {
+    return res.status(400).json({ error: "Aucun code en attente" });
+  }
+  
+  if (Date.now() > data.admin.otpExpires) {
+    return res.status(400).json({ error: "Code expiré" });
+  }
+  
+  if (data.admin.otp === code) {
+    // Clear OTP
+    delete data.admin.otp;
+    delete data.admin.otpExpires;
+    await updateContent({ admin: data.admin });
+    
+    // Generate real JWT token
+    const token = signToken({ role: 'admin' });
+    return res.json({ success: true, token });
+  } else {
+    return res.status(400).json({ error: "Code invalide" });
+  }
+};
+
+export const handleSetAdminPassword: RequestHandler = async (req, res) => {
+  const { password } = req.body;
+  if (!password || password.length < 8) {
+      return res.status(400).json({ error: "Mot de passe trop court" });
+  }
+  
+  const admin = setAdminPassword(password);
+  await updateContent({ admin });
+  
   res.json({ success: true });
+};
+
+export const handleBroadcastEmail: RequestHandler = async (req, res) => {
+  const { subject, message } = req.body;
+  const data = await loadData();
+  
+  if (!subject || !message) return res.status(400).json({ error: "Sujet ou message manquant" });
+
+  const subscribers = data.subscribers;
+  let count = 0;
+
+  try {
+    const transporter = await createTransporter();
+    for (const sub of subscribers) {
+        await transporter.sendMail({
+            from: `"BADIOR Ouattara" <${process.env.SMTP_USER}>`,
+            to: sub.email,
+            subject,
+            html: message
+        });
+        count++;
+    }
+  } catch (err) {
+      console.error("Broadcast error:", err);
+      return res.status(500).json({ error: "Échec de l'envoi de la diffusion" });
+  }
+  
+  res.json({ success: true, count });
+};
+
+export const handleAppointmentSubmission: RequestHandler = async (req, res) => {
+  const { name, email, topic, date, time } = req.body;
+  
+  if (!name || !email || !topic || !date || !time) {
+    return res.status(400).json({ error: "Champs requis manquants" });
+  }
+
+  const newAppointment: Appointment = {
+    id: crypto.randomBytes(8).toString('hex'),
+    date,
+    time,
+    name,
+    email,
+    topic,
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  };
+
+  await addAppointment(newAppointment);
+
+  try {
+     const transporter = await createTransporter();
+     
+     // Notify User
+     await transporter.sendMail({
+       from: `"BADIOR Ouattara" <${process.env.SMTP_USER}>`,
+       to: email,
+       subject: "Demande de rendez-vous reçue - BADIOR Ouattara",
+       text: `Bonjour ${name}, votre demande de rendez-vous pour le ${date} à ${time} a bien été reçue.`,
+       html: EmailTemplates.appointmentConfirmation(name, date, time, topic)
+     });
+
+     // Notify Admin
+     await transporter.sendMail({
+        from: `"Appointment System" <${process.env.SMTP_USER}>`,
+        to: process.env.SMTP_USER,
+        subject: `Nouvelle demande de rendez-vous: ${name}`,
+        text: `De: ${name}\nDate: ${date} ${time}\nSujet: ${topic}`,
+        html: EmailTemplates.adminAppointmentNotification({
+            name,
+            email,
+            date,
+            time,
+            topic
+        })
+     });
+
+  } catch (err) {
+     console.error("Failed to send confirmation email:", err);
+  }
+
+  res.json({ success: true, appointment: newAppointment });
+};
+
+export const handleAdminReply: RequestHandler = async (req, res) => {
+  const { to, subject, message } = req.body;
+  
+  if (!to || !subject || !message) {
+    return res.status(400).json({ error: "Champs requis manquants (destinataire, sujet, message)" });
+  }
+
+  try {
+    const transporter = await createTransporter();
+    await transporter.sendMail({
+      from: `"BADIOR Ouattara" <${process.env.SMTP_USER}>`,
+      to,
+      subject,
+      html: EmailTemplates.generalReply(message)
+    });
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Failed to send reply:", err);
+    res.status(500).json({ error: "Échec de l'envoi de l'email" });
+  }
 };

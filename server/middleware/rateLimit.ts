@@ -22,7 +22,7 @@ export function rateLimit(opts: { windowMs: number; max: number }) {
       }
       info.count += 1;
       if (info.count > opts.max) {
-        res.status(429).json({ success: false, message: 'Too many requests, slow down' });
+        res.status(429).json({ success: false, message: 'Trop de requêtes, veuillez patienter' });
         return;
       }
       return next();

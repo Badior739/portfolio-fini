@@ -1,7 +1,9 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Profile3DLayered({ image }: { image?: string }) {
+  const { t } = useLanguage();
   const profileImage = image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80";
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -70,22 +72,22 @@ export function Profile3DLayered({ image }: { image?: string }) {
         {/* Layer 4: Floating Glass Accents (Top) - Fixed Luminous Edge */}
         <motion.div 
           style={{ transform: "translateZ(80px)" }}
-          className="absolute top-10 -right-5 w-32 h-32 rounded-3xl border border-white/20 bg-white/10 backdrop-blur-md shadow-[0_0_30px_rgba(139,92,246,0.2)] flex items-center justify-center p-4 group-hover:border-primary/50 transition-colors"
+          className="absolute top-4 right-4 md:top-10 md:-right-5 w-24 h-24 md:w-32 md:h-32 rounded-3xl border border-white/20 bg-white/10 backdrop-blur-md shadow-[0_0_30px_rgba(139,92,246,0.2)] flex items-center justify-center p-4 group-hover:border-primary/50 transition-colors"
         >
            <div className="text-center group-hover:scale-110 transition-transform">
-             <div className="text-2xl font-black text-white drop-shadow-glow">5+</div>
-             <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Années d'XP</div>
+             <div className="text-xl md:text-2xl font-black text-white drop-shadow-glow">5+</div>
+             <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-wider text-white/70">{t('about.yearsXP')}</div>
            </div>
         </motion.div>
 
         {/* Layer 5: Floating Glass Accents (Bottom) */}
         <motion.div 
           style={{ transform: "translateZ(120px)" }}
-          className="absolute -bottom-10 -left-10 px-6 py-4 rounded-2xl border border-white/30 bg-primary/20 backdrop-blur-xl shadow-[0_0_40px_rgba(139,92,246,0.3)] group-hover:border-white transition-colors"
+          className="absolute bottom-4 left-4 md:-bottom-10 md:-left-10 px-4 py-3 md:px-6 md:py-4 rounded-2xl border border-white/30 bg-primary/20 backdrop-blur-xl shadow-[0_0_40px_rgba(139,92,246,0.3)] group-hover:border-white transition-colors"
         >
            <div className="flex items-center gap-3">
-             <div className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80] animate-pulse" />
-             <span className="text-sm font-bold text-white tracking-tight drop-shadow-sm">Focus on Architecture</span>
+             <div className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80] animate-pulse" />
+             <span className="text-xs md:text-sm font-bold text-white tracking-tight drop-shadow-sm">{t('about.focus')}</span>
            </div>
         </motion.div>
 

@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Zap, Target, Hexagon } from "lucide-react";
 import React from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function FloatingMetrics() {
+  const { t } = useLanguage();
+
   return (
     <div className="absolute inset-0 pointer-events-none hidden lg:block">
       {/* Metric 1 */}
@@ -17,7 +20,7 @@ export function FloatingMetrics() {
             <Zap size={20} />
           </div>
           <div className="pr-4">
-            <div className="text-xs text-white/50 uppercase font-mono">Performance</div>
+            <div className="text-xs text-white/50 uppercase font-mono">{t('floatingMetrics.performance')}</div>
             <div className="text-xl font-bold text-white tracking-widest">99.9%</div>
           </div>
         </div>
@@ -35,7 +38,7 @@ export function FloatingMetrics() {
             <Target size={20} />
           </div>
           <div className="pr-4">
-            <div className="text-xs text-white/50 uppercase font-mono">Satisfaction</div>
+            <div className="text-xs text-white/50 uppercase font-mono">{t('floatingMetrics.satisfaction')}</div>
             <div className="text-xl font-bold text-white tracking-widest">100%</div>
           </div>
         </div>
@@ -43,7 +46,7 @@ export function FloatingMetrics() {
 
       {/* Decorative HUD Elements */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 text-white/10 font-mono text-[10px] tracking-[0.5em] uppercase">
-        System_Status: Optimal // Core_Initialized
+        {t('floatingMetrics.systemStatus')}
       </div>
     </div>
   );

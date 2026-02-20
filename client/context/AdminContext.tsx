@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, PropsWithChildren } from 'r
 
 interface AdminContextType {
   adminOpen: boolean;
-  setAdminOpen: (open: boolean) => void;
+  setAdminOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);

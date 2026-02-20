@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ProjectTabsProps {
   categories: string[];
@@ -8,9 +9,10 @@ interface ProjectTabsProps {
 }
 
 export function ProjectTabs({ categories, activeCategory, onChange }: ProjectTabsProps) {
+  const { t } = useLanguage();
   return (
     <div className="flex justify-center mb-16 relative z-20">
-      <div className="flex gap-4 p-2 bg-secondary/50 border border-border/50 rounded-2xl backdrop-blur-3xl shadow-premium">
+      <div className="flex flex-wrap justify-center gap-2 md:gap-4 p-2 bg-secondary/50 border border-border/50 rounded-2xl backdrop-blur-3xl shadow-premium">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -28,7 +30,7 @@ export function ProjectTabs({ categories, activeCategory, onChange }: ProjectTab
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />
             )}
-            <span className="relative z-10">{cat}</span>
+            <span className="relative z-10">{cat === "Tous" ? t('projects.all') : cat}</span>
           </button>
         ))}
       </div>

@@ -1,70 +1,75 @@
-/**
- * Shared code between client and server
- * Useful to share types between client and server
- * and/or small pure JS functions that can be used on both client and server
- */
-
-/**
- * Example response type for /api/demo
- */
 export interface DemoResponse {
   message: string;
 }
 
-/**
- * Contact form data
- */
 export interface ContactFormData {
   name: string;
   email: string;
   message: string;
 }
 
-/**
- * Contact form response
- */
 export interface ContactResponse {
   success: boolean;
   message: string;
 }
 
+export type ExpertiseLevel = "Expert" | "Avancé" | "Maîtrisé" | "Advanced" | "Mastered";
+
 export interface Skill {
   name: string;
-  category: string;
-  level: number;
+  description: string;
+  expertise: ExpertiseLevel;
+  icon: string;
+  level?: number; // Added for progress bars
+  color: {
+    from: string;
+    to: string;
+    accent: string;
+  };
 }
 
 export interface Project {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  imageUrl: string;
-  githubUrl: string;
-  liveUrl: string;
-  tags: string[];
+  category: string;
+  image: string;
+  role: string;
+  tools: string[];
+  year: number;
+  link?: string;
+  github?: string;
 }
 
-export interface Admin {
-  salt: string;
-  hash: string;
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  content: string;
+  avatar?: string;
 }
 
-export interface SiteData {
-  visits: number;
-  messages: number;
-  skills: Skill[];
-  projects: Project[];
-  subscribers: string[];
-  admin?: Admin;
-  hero?: HeroData;
-  about?: AboutData;
-  bento?: BentoItem[];
-  contact?: ContactData;
-  receivedMessages?: ReceivedMessage[];
-  statsHistory?: StatsEntry[];
+export interface Experience {
+  id: string;
+  year: string;
+  role: string;
+  company: string;
+  description?: string;
+  icon?: string;
+  technologies?: string[];
 }
 
-export interface HeroData {
+export interface SiteSettings {
+  siteTitle: string;
+  siteDescription: string;
+  siteKeywords: string;
+  enable2FA: boolean;
+  web3formsKey?: string;
+  gaId?: string;
+}
+
+export interface HeroContent {
   badge: string;
   title: string;
   subtitle: string;
@@ -73,7 +78,7 @@ export interface HeroData {
   secondaryCTA: string;
 }
 
-export interface AboutData {
+export interface AboutContent {
   titleMain: string;
   titleSub: string;
   quote: string;
@@ -85,24 +90,34 @@ export interface BentoItem {
   title: string;
   icon: string;
   content: string;
-  className: string;
-  bg: string;
+  className?: string;
+  bg?: string;
 }
 
-export interface ContactData {
+export interface ContactInfo {
   email: string;
   location: string;
   linkedin: string;
   github: string;
 }
 
-export interface ReceivedMessage {
-  id: number;
-  date: string;
-  name: string;
+export interface Admin {
+  salt: string;
+  hash: string;
+  otp?: string;
+  otpExpires?: number;
+}
+
+export interface Subscriber {
   email: string;
-  message: string;
-  status: 'unread' | 'read';
+  date: string;
+}
+
+export interface PendingSubscriber {
+  email: string;
+  token: string;
+  date?: string;
+  expires?: number;
 }
 
 export interface StatsEntry {
@@ -112,44 +127,48 @@ export interface StatsEntry {
   messages: number;
 }
 
-export interface HeroData {
-  badge: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  primaryCTA: string;
-  secondaryCTA: string;
-}
-
-export interface AboutData {
-  titleMain: string;
-  titleSub: string;
-  quote: string;
-  description: string;
-  profileImage: string;
-}
-
-export interface BentoItem {
-  title: string;
-  icon: string;
-  content: string;
-  className: string;
-  bg: string;
-}
-
-export interface ContactData {
-  email: string;
-  location: string;
-  linkedin: string;
-  github: string;
-}
-
 export interface ReceivedMessage {
   id: number;
   date: string;
   name: string;
   email: string;
   message: string;
-  status: 'unread' | 'read';
+  status: "unread" | "read";
+  company?: string;
+  projectType?: string;
+  budget?: string;
+  timeline?: string;
+  recruitment?: boolean;
 }
 
+export interface Appointment {
+  id: string;
+  date: string;
+  time: string;
+  name: string;
+  email: string;
+  topic: string;
+  status: "pending" | "confirmed" | "cancelled";
+  meetingLink?: string;
+  createdAt: string;
+}
+
+export interface SiteData {
+  visits: number;
+  messages: number;
+  skills: Skill[];
+  projects: Project[];
+  subscribers: Subscriber[];
+  pendingSubscribers?: PendingSubscriber[];
+  hero?: HeroContent;
+  about?: AboutContent;
+  bento?: BentoItem[];
+  contact?: ContactInfo;
+  receivedMessages?: ReceivedMessage[];
+  statsHistory?: StatsEntry[];
+  admin?: Admin;
+  testimonials?: Testimonial[];
+  experiences?: Experience[];
+  settings?: SiteSettings;
+  appointments?: Appointment[];
+}

@@ -39,13 +39,29 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+import { useSound } from "@/context/SoundContext";
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, onMouseEnter, onClick, ...props }, ref) => {
+    const { playHover, playClick } = useSound();
     const Comp = asChild ? Slot : "button";
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      playHover();
+      onMouseEnter?.(e);
+    }
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      playClick();
+      onClick?.(e);
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        onMouseEnter={handleMouseEnter}
+        onClick={handleClick}
         {...props}
       />
     );

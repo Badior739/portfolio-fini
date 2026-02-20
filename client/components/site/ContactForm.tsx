@@ -3,16 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Send, CheckCircle2, ShieldCheck, Briefcase, BarChart3, Clock, Layout, Mail } from "lucide-react";
+import { ContactInfo } from "@shared/api";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
-export function ContactForm() {
+export function ContactForm({ data }: { data?: ContactInfo }) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    company: "",
-    projectType: "Web Ecosystem",
-    budget: "5k€ - 10k€",
-    timeline: "3 - 6 mois",
     message: "",
   });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
@@ -25,40 +24,44 @@ export function ContactForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      toast({ title: "Champs requis", description: "Veuillez compléter les identifiants de base." });
+      toast({ title: "Champs requis", description: "Veuillez compléter tous les champs." });
       return;
     }
 
     setStatus("sending");
     
     try {
-      const response = await fetch("/api/contact", {
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("message", formData.message);
+      formDataToSend.append("access_key", import.meta.env.VITE_WEB3FORMS_KEY || "");
+      formDataToSend.append("from_name", "Portfolio Cosmos");
+      formDataToSend.append("subject", `Nouveau Message de ${formData.name}`);
+
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (data.success) {
         setStatus("success");
         setTimeout(() => setStatus("idle"), 8000);
         setFormData({ 
           name: "", 
           email: "", 
-          company: "", 
-          projectType: "Web Ecosystem", 
-          budget: "5k€ - 10k€", 
-          timeline: "3 - 6 mois", 
           message: "" 
         });
       } else {
         setStatus("error");
-        toast({ title: "Signal Interrompu", description: data.error || "Impossible d'établir la liaison." });
+        toast({ title: t('contact.toast.signalErrorTitle'), description: data.message || t('contact.toast.signalErrorDesc') });
       }
     } catch (err) {
+      console.error("Contact Form Error:", err);
       setStatus("error");
-      toast({ title: "Liaison Échouée", description: "Erreur de protocole réseau." });
+      toast({ title: t('contact.toast.networkErrorTitle'), description: t('contact.toast.networkErrorDesc') });
     }
   }
 
@@ -72,19 +75,19 @@ export function ContactForm() {
             exit={{ opacity: 0, scale: 1.1 }}
             className="flex flex-col items-center justify-center py-24 text-center"
           >
-            <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(var(--primary-rgb),0.2)]">
-              <CheckCircle2 size={48} className="text-primary animate-pulse" />
+            <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 md:mb-8 shadow-[0_0_50px_rgba(var(--primary-rgb),0.2)]">
+              <CheckCircle2 size={32} className="text-primary animate-pulse md:w-12 md:h-12" />
             </div>
-            <h3 className="text-4xl font-black text-white mb-4 uppercase tracking-[0.2em]">Transmission Finalisée</h3>
-            <p className="text-white/40 font-mono text-sm max-w-md mx-auto leading-relaxed mb-10">
-              Votre proposition a été injectée dans le système. Une itération stratégique sera générée prochainement.
+            <h3 className="text-2xl md:text-4xl font-black text-white mb-4 uppercase tracking-[0.2em]">{t('contact.title')}</h3>
+            <p className="text-white/40 font-mono text-[10px] md:text-sm max-w-md mx-auto leading-relaxed mb-8 md:mb-10 px-4">
+              {t('contact.successMessage')}
             </p>
             <Button 
               variant="outline" 
-              className="px-10 h-14 rounded-full border-white/10 text-white/60 hover:text-white hover:border-primary/50 transition-all"
+              className="px-8 md:px-10 h-12 md:h-14 rounded-full border-white/10 text-white/60 hover:text-white hover:border-primary/50 transition-all text-xs md:text-base"
               onClick={() => setStatus("idle")}
             >
-              Nouveau Signal
+              {t('contact.newSignal')}
             </Button>
           </motion.div>
         ) : (
@@ -95,74 +98,38 @@ export function ContactForm() {
             className="space-y-8"
           >
             {/* 1. Basic Info Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FloatingInput 
-                label="Structure / Identité" 
+                label={t('contact.name')}
                 name="name" 
                 value={formData.name} 
                 onChange={handleChange} 
-                placeholder="Votre Nom Complet" 
+                placeholder={t('contact.placeholders.name')}
                 required 
                 icon={<ShieldCheck size={14} />}
               />
               <FloatingInput 
-                label="Canal de Communication" 
+                label={t('contact.email')}
                 name="email" 
                 type="email" 
                 value={formData.email} 
                 onChange={handleChange} 
-                placeholder="votre@email.com" 
+                placeholder={t('contact.placeholders.email')}
                 required 
                 icon={<Mail size={14} />}
               />
-              <FloatingInput 
-                label="Organisation" 
-                name="company" 
-                value={formData.company} 
-                onChange={handleChange} 
-                placeholder="Nom de l'entreprise (Opt.)" 
-                icon={<Briefcase size={14} />}
-              />
             </div>
 
-            {/* 2. Project Architecture Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <ArchitecturalSelect 
-                label="Type de Structure"
-                name="projectType"
-                value={formData.projectType}
-                onChange={handleChange}
-                icon={<Layout size={14} />}
-                options={["Web Ecosystem", "Mobile Suite", "Brand Identity", "Cloud Architecture", "E-Commerce", "Autre"]}
-              />
-              <ArchitecturalSelect 
-                label="Allocation Budget"
-                name="budget"
-                value={formData.budget}
-                onChange={handleChange}
-                icon={<BarChart3 size={14} />}
-                options={["< 5k€", "5k€ - 15k€", "15k€ - 50k€", "50k€ +"]}
-              />
-              <ArchitecturalSelect 
-                label="Échéancier"
-                name="timeline"
-                value={formData.timeline}
-                onChange={handleChange}
-                icon={<Clock size={14} />}
-                options={["< 1 mois", "1 - 3 mois", "3 - 6 mois", "Indéfini"]}
-              />
-            </div>
-
-            {/* 3. Message Area */}
+            {/* 2. Message Area */}
             <div className="relative group">
               <label className="absolute -top-3 left-4 px-3 bg-[#050508] text-[10px] font-black uppercase tracking-[0.4em] text-white/30 z-10 transition-all group-focus-within:text-primary group-focus-within:scale-110 origin-left">
-                Vision_Architecture // Brief
+                {t('contact.message')}
               </label>
               <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Décrivez les fondations de votre projet..."
+                placeholder={t('contact.placeholders.message')}
                 rows={6}
                 className="w-full rounded-[2rem] border border-white/5 bg-white/[0.03] px-8 py-7 text-base text-white outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all duration-700 backdrop-blur-3xl resize-none placeholder:text-white/10"
                 required
@@ -174,13 +141,16 @@ export function ContactForm() {
               <Button 
                 type="submit" 
                 disabled={status === "sending"}
-                className="group relative w-full h-20 rounded-[1.5rem] bg-foreground text-background hover:bg-white font-black uppercase tracking-[0.3em] overflow-hidden transition-all duration-500 active:scale-[0.97] hover:shadow-[0_0_60px_rgba(255,255,255,0.1)]"
+                className="group relative w-full h-16 md:h-20 rounded-xl md:rounded-[1.5rem] bg-foreground text-background hover:bg-white font-black uppercase tracking-widest md:tracking-[0.3em] overflow-hidden transition-all duration-500 active:scale-[0.97] hover:shadow-[0_0_60px_rgba(255,255,255,0.1)]"
               >
-                <div className="relative z-10 flex items-center justify-center gap-4 text-lg">
+                <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4 text-sm md:text-lg">
                   {status === "sending" ? (
-                    <span className="flex items-center gap-3 italic">Calcul de Trajectoire... <div className="w-2 h-2 rounded-full bg-background animate-ping" /></span>
+                    <span className="flex items-center gap-3 italic">{t('contact.sending')} <div className="w-2 h-2 rounded-full bg-background animate-ping" /></span>
                   ) : (
-                    <>Lancer la Transmission <Send size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500 ease-out" /></>
+                    <>
+                      <span className="truncate">{t('contact.submit')}</span>
+                      <Send size={18} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500 ease-out md:w-5 md:h-5" />
+                    </>
                   )}
                 </div>
                 {/* Visual effects */}
@@ -189,8 +159,7 @@ export function ContactForm() {
               </Button>
 
               <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-[10px] font-mono text-white/20 uppercase tracking-[0.3em]">
-                <div className="flex items-center gap-2"><ShieldCheck size={12} className="text-primary/50" /> End_to_End_Encryption</div>
-                <div className="flex items-center gap-2"><Clock size={12} /> Response_Time &lt; 24h</div>
+                {/* Removed technical filler text */}
               </div>
             </div>
           </motion.form>

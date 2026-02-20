@@ -1,8 +1,10 @@
 // Add missing React import
 import React, { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Footer() {
+  const { t, language } = useLanguage();
   const year = new Date().getFullYear();
   const [email, setEmail] = useState("");
 
@@ -10,7 +12,7 @@ export function Footer() {
   const onSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast({ title: "Email invalide", description: "Veuillez saisir un email valide." });
+      toast({ title: t('footer.invalidEmailTitle'), description: t('footer.invalidEmailDesc') });
       return;
     }
     
@@ -22,13 +24,13 @@ export function Footer() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({ title: "Succès", description: "Merci ! Vous êtes inscrit à la newsletter." });
+        toast({ title: t('footer.successTitle'), description: t('footer.successDesc') });
         setEmail("");
       } else {
-        toast({ title: "Erreur", description: data.message || "Une erreur s'est produite" });
+        toast({ title: t('footer.errorTitle'), description: data.message || t('footer.errorDesc') });
       }
     } catch (error) {
-      toast({ title: "Erreur", description: "Impossible de s'inscrire. Veuillez réessayer." });
+      toast({ title: t('footer.subscribeErrorTitle'), description: t('footer.subscribeErrorDesc') });
     }
   };
 
@@ -48,31 +50,27 @@ export function Footer() {
                </div>
                <div className="flex flex-col">
                   <span className="text-xl font-black text-foreground tracking-widest uppercase">Badior_Ouattara</span>
-                  <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-[0.5em]">Global_Root_Director</span>
                </div>
             </div>
             <p className="text-muted-foreground text-base leading-relaxed max-w-sm mb-10">
-              Concepteur logiciel & Architecte UI/UX. Spécialisé dans la création de structures numériques monumentales et scalables.
+              {t('footer.description')}
             </p>
             <div className="flex items-center gap-10">
                <div className="flex flex-col gap-1">
-                  <span className="text-[8px] font-mono text-muted-foreground/50 uppercase tracking-widest">Core_Location</span>
-                  <span className="text-xs font-bold text-foreground/60">Bobo-Dioulasso, Burkina Faso // 11.1772 N</span>
+                  <span className="text-xs font-bold text-foreground/60">{t('footer.location')} // 11.1772 N</span>
                </div>
                <div className="flex flex-col gap-1">
-                  <span className="text-[8px] font-mono text-muted-foreground/50 uppercase tracking-widest">System_Time</span>
-                  <span className="text-xs font-bold text-foreground/60">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} GMT+0</span>
+                  <span className="text-xs font-bold text-foreground/60">{new Date().toLocaleTimeString(language === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' })} GMT+0</span>
                </div>
             </div>
           </div>
 
           {/* System Map (Sitemap) */}
           <div className="space-y-6">
-            <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.5em]">System_Map</h4>
             <nav className="flex flex-col gap-4">
               {['Home', 'About', 'Skills', 'Projects', 'Contact'].map((item) => (
                 <a key={item} href={`#${item.toLowerCase()}`} className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors tracking-[0.2em] uppercase">
-                  {item}
+                  {t(`nav.${item.toLowerCase()}`)}
                 </a>
               ))}
             </nav>
@@ -80,17 +78,16 @@ export function Footer() {
 
           {/* Technical Newsletter */}
           <div className="space-y-6">
-            <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.5em]">Newsletter_Stream</h4>
-            <p className="text-muted-foreground text-xs">Abonnez-vous pour recevoir les rapports d'études et innovations système.</p>
+            <p className="text-muted-foreground text-xs">{t('footer.subscribeText')}</p>
             <form onSubmit={onSubscribe} className="relative group">
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Identifiant_Email"
+                placeholder={t('footer.emailPlaceholder')}
                 className="w-full h-14 bg-secondary border border-border/50 rounded-xl px-6 outline-none focus:border-primary/50 text-sm text-foreground transition-all placeholder:text-muted-foreground/30"
               />
               <button type="submit" className="absolute right-2 top-2 h-10 px-4 bg-primary rounded-lg text-white text-[10px] font-black uppercase tracking-widest shadow-glow">
-                OK
+                {t('footer.subscribeButton')}
               </button>
             </form>
           </div>
@@ -100,8 +97,12 @@ export function Footer() {
         {/* Final Footer Row */}
         <div className="pt-10 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-8">
            <div className="flex flex-col items-center md:items-start gap-1">
-              <span className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-[0.5em]">© {new Date().getFullYear()} Badior_Architecture</span>
-              <span className="text-[8px] font-mono text-muted-foreground/30 uppercase tracking-[0.5em]">Digital_Heritage_Reserved</span>
+              <span className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-[0.5em]">
+                © {new Date().getFullYear()} {t('footer.rights')} - {t('footer.allRightsReserved')}
+              </span>
+              <a href="/terms" className="text-[10px] font-mono text-muted-foreground/30 hover:text-primary transition-colors uppercase tracking-[0.3em] mt-1">
+                {t('footer.termsOfUse')}
+              </a>
            </div>
 
            <div className="flex items-center gap-8">
@@ -109,7 +110,7 @@ export function Footer() {
                 { label: 'GitHub', url: 'https://github.com/Badior739' },
                 { label: 'Threads', url: 'https://www.threads.com/@badior17' },
                 { label: 'X', url: 'https://x.com/Badior01' },
-                { label: 'LinkedIn', url: '#' }
+                { label: 'Instagram', url: 'https://www.instagram.com/mindgraphixsolution' }
               ].map((social) => (
                 <a key={social.label} href={social.url} className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 hover:text-primary transition-colors">
                   {social.label}
@@ -118,7 +119,7 @@ export function Footer() {
            </div>
 
            <a href="/api/curriculum" className="px-6 py-2 rounded-lg border border-border/50 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 hover:text-foreground transition-all">
-              Download_CV (PDF)
+              {t('footer.downloadCV')}
            </a>
         </div>
       </div>

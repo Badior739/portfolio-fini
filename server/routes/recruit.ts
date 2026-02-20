@@ -2,18 +2,19 @@ import { RequestHandler } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import nodemailer from "nodemailer";
+import { createTransporter } from "../config/smtp";
+import { addMessage } from "../lib/storage";
+import { EmailTemplates } from "../lib/email-templates";
+
 // Fix missing 'File' member in 'multer' by using any for MulterFile
 type MulterFile = any;
-
-const DATA_FILE = path.join((process as any).cwd(), "data", "site-data.json");
 
 // Fix process.cwd access with any cast
 const upload = multer({ dest: path.join((process as any).cwd(), "tmp/uploads") });
 
 export const handleRecruit: RequestHandler = (req, res) => {
   // multer will have populated req.file and req.body
-  res.status(400).json({ message: "Use POST multipart/form-data to /api/recruit" });
+  res.status(400).json({ message: "Utilisez POST multipart/form-data vers /api/recruit" });
 };
 
 export const uploadHandler = upload.single("file");
@@ -55,20 +56,11 @@ export const handleRecruitPost: RequestHandler = async (req, res) => {
       return res.status(202).json({ message: "Envoi d'emails désactivé (ENV). Fichier stocké.", attachments: attachments.map(a => a.path) });
     }
 
-    if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
-      const transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: SMTP_PORT,
-        secure: SMTP_PORT === 465,
-        auth: { user: SMTP_USER, pass: SMTP_PASS },
-      });
-
-      // Save to site-data.json for Admin View
+    const transporter = createTransporter();
+    if (transporter) {
+      // Save to storage (DB or JSON)
       try {
-        if (fs.existsSync(DATA_FILE)) {
-          const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-          data.receivedMessages = data.receivedMessages || [];
-          data.receivedMessages.push({
+        await addMessage({
             id: Date.now(),
             date: new Date().toISOString(),
             name: fromName,
@@ -80,39 +72,42 @@ export const handleRecruitPost: RequestHandler = async (req, res) => {
             message: message,
             status: 'unread',
             recruitment: true
-          });
-          data.messages = (data.messages || 0) + 1;
-          fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-        }
+        });
       } catch (err) {
         console.error("Failed to store recruit message in DB:", err);
       }
 
+      // 1. Send Notification to Admin
       const mail = await transporter.sendMail({
         from: `"BADIOR Ouattara" <${SMTP_USER}>`,
         replyTo: fromEmail,
         to: TO_EMAIL,
         subject: `[SYSTEM_SIGNAL] Candidature Reçue - ${fromName}`,
-        html: `
-          <div style="background-color: #050505; color: #ffffff; font-family: sans-serif; padding: 40px; border-radius: 20px;">
-            <h1 style="color: #fff; border-bottom: 1px solid #333; padding-bottom: 20px; font-size: 20px; text-transform: uppercase; letter-spacing: 2px;">Vibration Recrutement Détectée,</h1>
-            <p style="color: #ccc; line-height: 1.6;">Un nouveau signal de type <strong>Candidature</strong> a été intercepté.</p>
-            <div style="background: #111; padding: 25px; border-radius: 15px; border: 1px solid #222; margin: 20px 0;">
-              <p style="margin: 0; font-size: 12px; color: #666; letter-spacing: 1px; text-transform: uppercase;">MÉTA-DONNÉES DU CANDIDAT :</p>
-              <p style="margin: 10px 0 5px; font-size: 15px;"><strong>Identité :</strong> ${fromName}</p>
-              <p style="margin: 5px 0; font-size: 15px;"><strong>Structure :</strong> ${company || "Particulier"}</p>
-              <p style="margin: 5px 0; font-size: 15px;"><strong>Poste Cible :</strong> ${body.position || "Non défini"}</p>
-              <p style="margin: 5px 0; font-size: 15px;"><strong>Contact :</strong> ${fromEmail} / ${body.phone || "N/A"}</p>
-            </div>
-            <p style="color: #ccc; background: #000; padding: 15px; border-radius: 10px; border-left: 3px solid #8b5cf6;">
-              <strong>Brief :</strong> ${message}
-            </p>
-            <br>
-            <p style="color: #666; font-size: 11px; text-transform: uppercase;">BADIOR Ouattara • Architecte Digital System</p>
-          </div>
-        `,
+        text: `Candidature de ${fromName} pour le poste ${body.position || "Spontané"}.\n\nMessage: ${message}`,
+        html: EmailTemplates.adminRecruitNotification({
+            name: fromName,
+            email: fromEmail,
+            company: company,
+            position: body.position,
+            message: message,
+            hasAttachment: !!file
+        }),
         attachments,
       });
+
+      // 2. Send Auto-Reply to Candidate
+      try {
+        await transporter.sendMail({
+          from: `"BADIOR Ouattara" <${SMTP_USER}>`,
+          to: fromEmail,
+          subject: `Confirmation de réception - Candidature ${body.position || "Spontanée"}`,
+          html: EmailTemplates.recruitConfirmation(fromName, body.position)
+        });
+        console.log(`Auto-reply sent to candidate: ${fromEmail}`);
+      } catch (error) {
+        console.error("Failed to send auto-reply to candidate:", error);
+        // Don't fail the request if auto-reply fails
+      }
 
       return res.status(200).json({ message: "Proposition transmise avec succès", info: mail });
     }

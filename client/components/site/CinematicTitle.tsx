@@ -1,11 +1,11 @@
-import { motion, Variants, Transition } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import React from "react";
 
 export function CinematicTitle() {
   const name = "BADIOR".split("");
   const surname = "OUATTARA".split("");
 
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -16,9 +16,9 @@ export function CinematicTitle() {
     }
   };
 
-  const item = {
+  const item: Variants = {
     hidden: { y: 100, opacity: 0, rotateX: -90 },
-    show: { y: 0, opacity: 1, rotateX: 0, transition: { type: "spring", stiffness: 100 } as Transition }
+    show: { y: 0, opacity: 1, rotateX: 0, transition: { type: "spring", stiffness: 100 } }
   };
 
   return (

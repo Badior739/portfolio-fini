@@ -7,10 +7,11 @@ import { uploadHandler, handleRecruitPost } from "./routes/recruit";
 import { handleResume } from "./routes/resume";
 import { handleCurriculumPDF } from "./routes/curriculum";
 import { registerSmtpRoutes } from "./routes/smtp";
-import { handleGetStats, handleIncrementVisit, handleIncrementMessage, handleGetContent, handleSaveContent, handleResetStats, handleAdminLogin, handleAdminVerify2FA, handleSetAdminPassword, handleBroadcastEmail, handleContactSubmission } from "./routes/admin";
+import { handleGetStats, handleIncrementVisit, handleIncrementMessage, handleGetContent, handleGetPublicContent, handleSaveContent, handleResetStats, handleAdminLogin, handleAdminVerify2FA, handleSetAdminPassword, handleBroadcastEmail, handleContactSubmission, handleAppointmentSubmission, handleAdminReply } from "./routes/admin";
 import { handleSubscribe, handleGetSubscribers, handleRemoveSubscriber, handleConfirm } from "./routes/newsletter";
 import { rateLimit } from './middleware/rateLimit';
-import { uploadHandler as uploadsUploadHandler, handleUpload } from "./routes/uploads";
+import { authMiddleware } from './middleware/auth';
+import { uploadHandler as uploadsUploadHandler, handleUpload, handleGetFile } from "./routes/uploads";
 import path from "path";
 
 export function createServer() {
@@ -18,9 +19,16 @@ export function createServer() {
 
   // Middleware
   // Fix Express overload errors by casting middleware to any
-  app.use(cors() as any);
-  app.use(express.json() as any);
-  app.use(express.urlencoded({ extended: true }) as any);
+  app.use(cors({
+    origin: [
+      'http://localhost:8080',
+      'http://localhost:3000',
+      process.env.SITE_ORIGIN || ''
+    ].filter(Boolean),
+    credentials: true
+  }));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -29,23 +37,23 @@ export function createServer() {
   });
 
   // Fix RequestHandler mismatch errors by casting handlers to any
-  app.get("/api/demo", handleDemo as any);
+  app.get("/api/demo", handleDemo);
 
   // Recruit endpoint (multipart)
   try {
-    app.post("/api/recruit", uploadHandler as any, handleRecruitPost as any);
+    app.post("/api/recruit", uploadHandler, handleRecruitPost);
   } catch (err) {
     console.error("Failed to register recruit route", err);
   }
 
   try {
-    app.get("/api/resume", handleResume as any);
+    app.get("/api/resume", handleResume);
   } catch (err) {
     console.error("Failed to register resume route", err);
   }
 
   try {
-    app.get("/api/curriculum", handleCurriculumPDF as any);
+    app.get("/api/curriculum", handleCurriculumPDF);
   } catch (err) {
     console.error("Failed to register curriculum route", err);
   }
@@ -58,30 +66,40 @@ export function createServer() {
   }
 
   // Admin stats and content routes
-  app.get("/api/admin/stats", handleGetStats as any);
-  app.post("/api/admin/visit", handleIncrementVisit as any);
-  app.post("/api/admin/message", handleIncrementMessage as any);
-  app.post("/api/contact", handleContactSubmission as any);
-  app.get("/api/admin/content", handleGetContent as any);
-  app.post("/api/admin/content", handleSaveContent as any);
-  app.post("/api/admin/reset", handleResetStats as any);
-  app.post('/api/admin/login', handleAdminLogin as any);
-  app.post('/api/admin/verify-2fa', handleAdminVerify2FA as any);
-  app.post('/api/admin/password', handleSetAdminPassword as any);
-  app.post('/api/admin/broadcast', handleBroadcastEmail as any);
+  app.get("/api/admin/stats", authMiddleware, handleGetStats);
+  app.post("/api/admin/visit", handleIncrementVisit); // Public
+  app.post("/api/admin/message", handleIncrementMessage); // Public
+  app.post("/api/contact", handleContactSubmission); // Public
+  app.post("/api/appointment", handleAppointmentSubmission); // Public
+  
+  // Content routes
+  app.get("/api/content", handleGetPublicContent); // Public
+  app.get("/api/admin/content", authMiddleware, handleGetContent);
+  app.post("/api/admin/content", authMiddleware, handleSaveContent);
+  
+  app.post("/api/admin/reset", authMiddleware, handleResetStats);
+  app.post('/api/admin/login', handleAdminLogin);
+  app.post('/api/admin/verify-2fa', handleAdminVerify2FA);
+  app.post('/api/admin/password', authMiddleware, handleSetAdminPassword);
+  app.post('/api/admin/broadcast', authMiddleware, handleBroadcastEmail);
+  app.post('/api/admin/reply', authMiddleware, handleAdminReply);
 
   // Newsletter routes (apply lightweight rate limiting for subscribe)
-  app.post("/api/newsletter/subscribe", rateLimit({ windowMs: 60_000, max: 6 }) as any, handleSubscribe as any);
-  app.get("/api/newsletter/subscribers", handleGetSubscribers as any);
-  app.post("/api/newsletter/remove", rateLimit({ windowMs: 60_000, max: 6 }) as any, handleRemoveSubscriber as any);
-  app.get('/api/newsletter/confirm', handleConfirm as any);
-
+  app.post("/api/newsletter/subscribe", rateLimit({ windowMs: 60_000, max: 6 }), handleSubscribe);
+  app.get("/api/newsletter/subscribers", authMiddleware, handleGetSubscribers);
+  app.post("/api/newsletter/remove", authMiddleware, rateLimit({ windowMs: 60_000, max: 6 }), handleRemoveSubscriber);
+  app.get('/api/newsletter/confirm', handleConfirm);
+  
   // Uploads endpoint + static serve
   try {
     // Protect upload endpoint from excessive requests
-    app.post('/api/uploads', rateLimit({ windowMs: 60_000, max: 12 }) as any, uploadsUploadHandler as any, handleUpload as any);
+    // Require auth for uploads as well to prevent spam
+    app.post('/api/uploads', authMiddleware, rateLimit({ windowMs: 60_000, max: 12 }), uploadsUploadHandler, handleUpload);
+    // Serve files from DB
+    app.get('/api/files/:id', handleGetFile);
+    
     // Fix process.cwd access with any cast and static middleware cast
-    app.use('/uploads', express.static(path.join((process as any).cwd(), 'tmp', 'uploads')) as any);
+    app.use('/uploads', express.static(path.join((process as any).cwd(), 'tmp', 'uploads')));
   } catch (err) {
     console.error('Failed to register uploads route', err);
   }

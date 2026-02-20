@@ -23,8 +23,8 @@ export function SingularityCore() {
       {/* 1. The Singularity Hole */}
       <motion.div 
         style={{
-          x: useTransform(mouseXSpring, (v) => (v - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * 0.05),
-          y: useTransform(mouseYSpring, (v) => (v - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * 0.05),
+          x: useTransform(mouseXSpring, (v: number) => (v - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * 0.05),
+          y: useTransform(mouseYSpring, (v: number) => (v - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * 0.05),
         }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vh]"
       >
@@ -40,8 +40,8 @@ export function SingularityCore() {
       {/* 3. Deep Technical Grid with Parallax */}
       <motion.div 
          style={{
-           x: useTransform(mouseXSpring, (v) => (v - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * -0.02),
-           y: useTransform(mouseYSpring, (v) => (v - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * -0.02),
+           x: useTransform(mouseXSpring, (v: number) => (v - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * -0.02),
+           y: useTransform(mouseYSpring, (v: number) => (v - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * -0.02),
          }}
          className="absolute inset-[-10%] opacity-[0.07] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:100px_100px]" 
       />
@@ -59,9 +59,9 @@ function GlassFragment({ mouseX, mouseY, index }: { mouseX: MotionValue<number>,
   const initialX = Math.random() * 2000 - 1000;
   const initialY = Math.random() * 2000 - 1000;
   
-  const x = useTransform(mouseX, (v) => initialX + (v - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * (0.1 + index * 0.01));
-  const y = useTransform(mouseY, (v) => initialY + (v - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * (0.1 + index * 0.01));
-  const rotate = useTransform(mouseX, (v) => (v * 0.1) + (index * 45));
+  const x = useTransform(mouseX, (v: number) => initialX + (v - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * (0.1 + index * 0.01));
+  const y = useTransform(mouseY, (v: number) => initialY + (v - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * (0.1 + index * 0.01));
+  const rotate = useTransform(mouseX, (v: number) => (v * 0.1) + (index * 45));
 
   return (
     <motion.div

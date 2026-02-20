@@ -4,33 +4,52 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AdminPanel } from "./AdminPanel";
-import { RecruitForm } from "./RecruitForm";
 import { useAdmin } from "@/context/AdminContext";
+import { Home, User, Lightbulb, Briefcase, Mail, Menu, X, ArrowUpRight, Globe, Volume2, VolumeX } from "lucide-react";
+
+import { useLanguage } from "@/context/LanguageContext";
 
 const navItems = [
-  { id: "home", label: "Accueil" },
-  { id: "about", label: "À propos" },
-  { id: "skills", label: "Compétences" },
-  { id: "projects", label: "Projets" },
-  { id: "contact", label: "Contact" },
+  { id: "home", labelKey: "nav.home", icon: Home },
+  { id: "about", labelKey: "nav.about", icon: User },
+  { id: "skills", labelKey: "nav.skills", icon: Lightbulb },
+  { id: "projects", labelKey: "nav.projects", icon: Briefcase },
+  { id: "contact", labelKey: "nav.contact", icon: Mail },
 ];
 
-function NavIcon({ id }: { id: string }) {
-  // ... (keeping SVG icons logic)
-  return null;
-}
-
-export function Header() {
+export function Header({ onOpenRecruit }: { onOpenRecruit: () => void }) {
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [recruitOpen, setRecruitOpen] = useState(false);
   const { adminOpen, setAdminOpen } = useAdmin();
+  const { language, toggleLanguage, t } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     onScroll();
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+
+    const keys = new Set<string>();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keys.add(e.key.toLowerCase());
+      if (keys.has('control') && keys.has('b') && keys.has('enter')) {
+        e.preventDefault();
+        setAdminOpen(prev => !prev);
+        keys.clear();
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keys.delete(e.key.toLowerCase());
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
   }, []);
 
   const navigate = useNavigate();
@@ -38,9 +57,8 @@ export function Header() {
 
   const handleScrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    setOpen(false);
     const el = document.getElementById(id);
-    const headerOffset = 72;
+    const headerOffset = 80;
 
     if (el) {
       const rect = el.getBoundingClientRect();
@@ -58,106 +76,83 @@ export function Header() {
 
   return (
     <>
-    <header className="fixed inset-x-0 top-0 z-[100] transition-all duration-500 pointer-events-none px-4 md:px-0">
-      <div className="container mt-6 md:mt-8">
+    <header className="fixed inset-x-0 top-0 z-[100] transition-all duration-700 pointer-events-none px-4 md:px-0">
+      <div className="container mt-4 md:mt-6">
         <motion.div 
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ type: "spring", damping: 20, stiffness: 100 }}
+          initial={{ y: -100, opacity: 0, scale: 0.9 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          transition={{ type: "spring", damping: 25, stiffness: 120 }}
           className={cn(
-            "relative mx-auto flex h-16 md:h-20 items-center justify-between rounded-[2rem] border border-border/50 px-6 md:px-10 transition-all duration-500 pointer-events-auto shadow-premium",
+            "relative mx-auto flex h-16 md:h-20 items-center justify-between rounded-[2rem] md:rounded-full border border-white/10 px-4 md:px-8 transition-all duration-500 pointer-events-auto shadow-premium overflow-hidden",
             scrolled 
-              ? "bg-background/80 backdrop-blur-2xl border-border" 
-              : "bg-background/20 backdrop-blur-lg border-border/40"
+              ? "bg-background/60 backdrop-blur-3xl border-white/10 shadow-2xl shadow-primary/5" 
+              : "bg-background/30 backdrop-blur-xl border-white/5"
           )}
         >
-          {/* Internal Luminous Tracer (Aesthetic) */}
-          <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
-             <div className="absolute top-0 left-0 w-40 h-[1.5px] bg-gradient-to-r from-transparent via-primary/50 to-transparent translate-x-[-200%] animate-scan-slow" />
-             <div className="absolute bottom-0 right-0 w-40 h-[1.5px] bg-gradient-to-r from-transparent via-primary/50 to-transparent translate-x-[200%] animate-scan-slow" style={{ animationDirection: 'reverse' }} />
-          </div>
-
+          {/* Supreme Ambient Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-50 pointer-events-none" />
+          <div className="absolute top-0 left-1/4 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none" />
+          
           {/* Logo & Identity */}
-          <div className="flex items-center gap-4 group cursor-pointer" onDoubleClick={() => setAdminOpen(!adminOpen)}>
-            <div className="relative w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-glow overflow-hidden group-hover:scale-110 transition-transform">
-               <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent" />
-               <span className="text-lg font-black text-white italic">B</span>
+          <div className="flex items-center gap-4 group cursor-pointer relative z-10">
+            <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-glow overflow-hidden group-hover:scale-110 transition-transform duration-500 backdrop-blur-md">
+               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+               <span className="text-lg md:text-xl font-black text-white italic relative z-10 group-hover:text-primary transition-colors">B</span>
             </div>
             <div className="hidden lg:flex flex-col">
-               <span className="text-sm font-black text-foreground uppercase tracking-widest">Badior</span>
-               <span className="text-[10px] font-mono text-primary/60 uppercase tracking-[0.3em]">Ouattara_Nodes</span>
+               <span className="text-sm font-black text-white uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all duration-500">Badior</span>
+               <span className="text-[9px] font-mono text-primary/80 uppercase tracking-[0.3em]">{t('header.role')}</span>
             </div>
           </div>
 
-          {/* Main Navigation (Architectural) */}
-          <nav className="hidden md:flex items-center gap-2">
+          {/* Main Navigation (Supreme) */}
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3 bg-white/5 rounded-full p-1.5 border border-white/5 backdrop-blur-md">
             {navItems.map((item) => (
               <Link
                 key={item.id}
                 to={`/#${item.id}`}
                 onClick={handleScrollTo(item.id)}
-                className="relative px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-foreground transition-all group"
+                className="relative px-4 py-2 rounded-full flex items-center gap-2 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-all group overflow-hidden hover:bg-white/10"
               >
-                <span className="relative z-10">{item.label}</span>
-                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-50 transition-transform origin-center" />
+                <item.icon className="w-3 h-3 text-primary/70 group-hover:text-primary transition-colors" />
+                <span className="relative z-10">{t(item.labelKey)}</span>
+                <motion.div 
+                  className="absolute inset-0 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  layoutId="nav-hover"
+                />
               </Link>
             ))}
           </nav>
 
           {/* Action Systems */}
-          <div className="flex items-center gap-3">
-             <Button 
-               variant="default" 
-               onClick={() => setRecruitOpen(true)} 
-               className="h-10 md:h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-[10px] font-black uppercase tracking-widest shadow-glow"
-             >
-               Recrutement
-             </Button>
+          <div className="flex items-center gap-3 relative z-10">
+             {/* Sound Toggle Removed */}
 
-             {/* Mobile Menu Trigger */}
-             <button
-               aria-label="Toggle Command"
-               onClick={() => setOpen((v) => !v)}
-               className="md:hidden flex h-10 w-10 items-center justify-center rounded-xl bg-secondary border border-border text-foreground"
-             >
-               <div className="flex flex-col gap-1 w-5">
-                 <div className={cn("h-0.5 bg-foreground transition-all", open ? "rotate-45 translate-y-1.5" : "")} />
-                 <div className={cn("h-0.5 bg-foreground transition-all", open ? "opacity-0" : "")} />
-                 <div className={cn("h-0.5 bg-foreground transition-all", open ? "-rotate-45 -translate-y-1.5" : "")} />
-               </div>
-             </button>
+             {/* Language Switcher */}
+            <button
+              onClick={toggleLanguage}
+              className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/40 border border-primary/50 text-primary shadow-[0_0_25px_hsl(var(--primary)/0.6)] hover:shadow-[0_0_50px_hsl(var(--primary)/1)] hover:bg-primary hover:text-white transition-all active:scale-95 backdrop-blur-md"
+              title={language === "fr" ? "Switch to English" : "Passer en Français"}
+            >
+              <span className="text-[10px] font-black uppercase tracking-widest">{language}</span>
+            </button>
+
+            <Button 
+              variant="ghost" 
+              onClick={onOpenRecruit}
+              className="flex h-9 md:h-11 px-4 md:px-6 rounded-full bg-primary/20 hover:bg-primary hover:text-white text-primary border border-primary/80 hover:border-primary text-[10px] font-black uppercase tracking-widest transition-all duration-300 group shadow-[0_0_30px_hsl(var(--primary)/0.6)] hover:shadow-[0_0_60px_hsl(var(--primary)/1)] backdrop-blur-md"
+            >
+              <span className="mr-2">{t('nav.recruit')}</span>
+              <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Button>
+
+             {/* Mobile Menu Trigger (Hidden as replaced by MobileDock) */}
+             <div className="hidden md:hidden w-10 h-10" /> 
           </div>
         </motion.div>
-
-        {/* Mobile Navigation Interface (Floating) */}
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="mt-4 md:hidden rounded-[2rem] border border-border bg-background/80 backdrop-blur-3xl p-6 pointer-events-auto shadow-premium"
-            >
-              <div className="flex flex-col gap-4">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={`/#${item.id}`}
-                    onClick={handleScrollTo(item.id)}
-                    className="flex justify-between items-center rounded-xl px-4 py-4 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
-                  >
-                    {item.label}
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary" />
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </header>
     {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
-    <RecruitForm open={recruitOpen} onClose={() => setRecruitOpen(false)} />
     </>
   );
 }

@@ -1,22 +1,30 @@
 import { motion } from "framer-motion";
-import { Skill } from "@/data/skills";
+import { Skill } from "@shared/api";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { 
   Code, Cpu, Database, Layout, Globe, Server, 
   Layers, Terminal, Zap, Shield, Smartphone,
   PenTool, Monitor, Box, Command, Search,
-  Award, Briefcase, GraduationCap, MapPin
+  Award, Briefcase, GraduationCap, MapPin, type LucideIcon, type LucideProps
 } from "lucide-react";
 
 // Fallback for missing icons
-const Brain = (props: any) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const Brain = (props: LucideProps) => (
+  <svg 
+    {...props} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
     <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.48Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.48Z"/>
   </svg>
 );
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ComponentType<LucideProps>> = {
   Code, Cpu, Database, Layout, Globe, Server, 
   Layers, Terminal, Zap, Shield, Smartphone,
   PenTool, Monitor, Box, Command, Search,
@@ -30,7 +38,7 @@ const iconMap: Record<string, any> = {
   "React": Cpu,
   "IA (Intelligence Artificielle)": Brain,
   "SQL": Database,
-  "TypeScript": Shield
+  "TypeScript": Shield,
 };
 
 interface TechCardProps {
@@ -43,13 +51,12 @@ export function TechCard({ skill, index }: TechCardProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
   // Robust icon resolution
-  const resolvedIcon = typeof skill.icon === 'string' ? iconMap[skill.icon] : null;
-  const Icon = resolvedIcon || iconMap[skill.name] || Code;
+  const Icon = iconMap[skill.icon] || iconMap[skill.name] || Code;
   
   // Map expertise to percentage
   const percentage = 
     skill.expertise === 'Expert' ? 98 :
-    skill.expertise === 'Avancé' ? 85 : 75;
+    (skill.expertise === 'Avancé' || skill.expertise === 'Advanced') ? 85 : 75;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

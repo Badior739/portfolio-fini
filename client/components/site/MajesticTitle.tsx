@@ -14,12 +14,12 @@ export function MajesticTitle({ title = "BADIOR", subtitle = "Ouattara" }: { tit
   return (
     <motion.div 
       style={{ opacity, scale }}
-      className="relative flex flex-col items-center justify-center py-12 md:py-20 perspective-2000"
+      className="relative flex flex-col items-center justify-center py-12 md:py-24 perspective-3000"
     >
       {/* 1. The Background Shadow Layer (Ghost) */}
       <motion.h1 
         style={{ y: y1 }}
-        className="absolute text-[10rem] md:text-[20rem] font-black italic text-white/[0.02] pointer-events-none select-none tracking-tighter"
+        className="absolute text-[12rem] md:text-[24rem] font-black italic text-white/[0.03] pointer-events-none select-none tracking-tighter"
       >
         {displayTitle}
       </motion.h1>
@@ -27,31 +27,35 @@ export function MajesticTitle({ title = "BADIOR", subtitle = "Ouattara" }: { tit
       {/* 2. The Main Foreground Layer */}
       <div className="relative z-10 flex flex-col items-center">
          <motion.div 
-           initial={{ y: 80, opacity: 0, rotateX: -45 }}
+           initial={{ y: 100, opacity: 0, rotateX: -60 }}
            animate={{ y: 0, opacity: 1, rotateX: 0 }}
-           transition={{ duration: 1.2, ease: "circOut" }}
-           className="relative"
+           transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+           className="relative group"
          >
-           <h1 className="text-7xl md:text-[11rem] font-black tracking-tighter leading-none text-white flex items-baseline uppercase">
+           <h1 className="text-8xl md:text-[13rem] font-black tracking-tighter leading-none text-white flex items-baseline uppercase select-none">
              {displayTitle}
-             <span className="text-primary text-4xl md:text-6xl animate-pulse ml-2">.</span>
+             <span className="text-primary text-5xl md:text-8xl animate-pulse ml-4 drop-shadow-[0_0_30px_rgba(var(--primary-rgb),0.8)]">.</span>
            </h1>
-           {/* Chromatic Shadow */}
-           <h1 className="absolute inset-0 text-7xl md:text-[11rem] font-black tracking-tighter leading-none text-red-500/20 mix-blend-screen translate-x-1 -z-10 blur-sm uppercase">{displayTitle}</h1>
-           <h1 className="absolute inset-0 text-7xl md:text-[11rem] font-black tracking-tighter leading-none text-blue-500/20 mix-blend-screen -translate-x-1 -z-10 blur-sm uppercase">{displayTitle}</h1>
+           
+           {/* Enhanced Premium Shadows */}
+           <h1 className="absolute inset-0 text-8xl md:text-[13rem] font-black tracking-tighter leading-none text-red-500/10 mix-blend-screen translate-x-2 translate-y-1 -z-10 blur-md uppercase pointer-events-none">{displayTitle}</h1>
+           <h1 className="absolute inset-0 text-8xl md:text-[13rem] font-black tracking-tighter leading-none text-blue-500/10 mix-blend-screen -translate-x-2 -translate-y-1 -z-10 blur-md uppercase pointer-events-none">{displayTitle}</h1>
+           
+           {/* Animated Shine Effect */}
+           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1500 ease-in-out pointer-events-none" />
          </motion.div>
 
          <motion.div
-           initial={{ x: -100, opacity: 0 }}
-           animate={{ x: 0, opacity: 1 }}
-           transition={{ delay: 0.6, duration: 1, ease: "circOut" }}
-           className="flex items-center gap-6 mt-2 md:-mt-4"
+           initial={{ x: -150, opacity: 0, letterSpacing: "1em" }}
+           animate={{ x: 0, opacity: 1, letterSpacing: "0.2em" }}
+           transition={{ delay: 0.8, duration: 1.2, ease: "circOut" }}
+           className="flex items-center gap-8 mt-4 md:-mt-6"
          >
-           <div className="h-[1px] w-16 md:w-32 bg-gradient-to-r from-transparent to-primary" />
-           <h2 className="text-3xl md:text-7xl font-thin italic tracking-[0.2em] text-primary/80 uppercase">
+           <div className="h-[2px] w-20 md:w-48 bg-gradient-to-r from-transparent via-primary/50 to-primary" />
+           <h2 className="text-4xl md:text-8xl font-thin italic text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-primary uppercase">
              {displaySubtitle}
            </h2>
-           <div className="h-[1px] w-16 md:w-32 bg-gradient-to-l from-transparent to-primary" />
+           <div className="h-[2px] w-20 md:w-48 bg-gradient-to-l from-transparent via-primary/50 to-primary" />
          </motion.div>
       </div>
     </motion.div>

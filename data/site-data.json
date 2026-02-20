@@ -1,112 +1,11 @@
 {
-  "visits": 1279,
+  "visits": 1385,
   "messages": 25,
-  "statsHistory": [
-    {
-      "date": "2026-01-11",
-      "visits": 140,
-      "subs": 2,
-      "messages": 1
-    },
-    {
-      "date": "2026-01-12",
-      "visits": 165,
-      "subs": 1,
-      "messages": 3
-    },
-    {
-      "date": "2026-01-13",
-      "visits": 132,
-      "subs": 4,
-      "messages": 0
-    },
-    {
-      "date": "2026-01-14",
-      "visits": 189,
-      "subs": 3,
-      "messages": 5
-    },
-    {
-      "date": "2026-01-15",
-      "visits": 210,
-      "subs": 5,
-      "messages": 2
-    },
-    {
-      "date": "2026-01-16",
-      "visits": 195,
-      "subs": 2,
-      "messages": 4
-    },
-    {
-      "date": "2026-01-17",
-      "visits": 219,
-      "subs": 6,
-      "messages": 9
-    },
-    {
-      "date": "2026-01-18",
-      "visits": 26,
-      "subscribers": 1,
-      "messages": 0
-    },
-    {
-      "date": "2026-02-06",
-      "visits": 1,
-      "subscribers": 2,
-      "messages": 0
-    }
-  ],
-  "hero": {
-    "badge": "Ingénierie de Précision & Esthétique Future",
-    "title": "BADIOR",
-    "subtitle": "Ouattara",
-    "description": "Architecte Digital spécialisé dans la conception d'écosystèmes numériques monumentaux, alliant rigueur mathématique et design immersif.",
-    "primaryCTA": "Explorer les Réalisations",
-    "secondaryCTA": "Consultation Stratégique"
-  },
-  "about": {
-    "titleMain": "Héritage",
-    "titleSub": "Architectural",
-    "quote": "Construire le code comme on érige une structure, avec une intention pure et une exécution sans faille.",
-    "description": "Mon approche de l'ingénierie logicielle transcende le simple développement; je conçois des solutions pérennes où chaque pixel et chaque fonction sont les briques d'une expérience utilisateur d'exception.",
-    "profileImage": "/uploads/1768703448637-profiljpg.jpg"
-  },
-  "bento": [
-    {
-      "title": "Le Parcours",
-      "icon": "Briefcase",
-      "content": "Plus de 5 ans d'expertise dans la transformation de visions complexes en architectures logicielles élégantes.",
-      "className": "md:col-span-2 md:row-span-1",
-      "bg": "bg-indigo-500/10"
-    },
-    {
-      "title": "Formation",
-      "icon": "GraduationCap",
-      "content": "Master en Architecture des Systèmes d'Information - Spécialisation Systèmes Distribués.",
-      "className": "md:col-span-1 md:row-span-1",
-      "bg": "bg-fuchsia-500/10"
-    },
-    {
-      "title": "Vision",
-      "icon": "Terminal",
-      "content": "L'ingénierie est l'art de la structure. Je bâtis pour la performance et la scalabilité.",
-      "className": "md:col-span-1 md:row-span-2",
-      "bg": "bg-cyan-500/10"
-    },
-    {
-      "title": "Localisation",
-      "icon": "MapPin",
-      "content": "Opérant depuis Bobo-Dioulasso, Burkina Faso, avec une portée d'intervention internationale.",
-      "className": "md:col-span-2 md:row-span-1",
-      "bg": "bg-emerald-500/10"
-    }
-  ],
   "skills": [
     {
       "name": "Photoshop",
       "description": "Maîtrise complète du logiciel. Retouche photo, composition, effets avancés et création de visuels profesionnels pour le web et l'impression.",
-      "expertise": "Expert",
+      "expertise": "Avancé",
       "icon": "Photoshop",
       "color": {
         "from": "from-indigo-500",
@@ -214,12 +113,6 @@
       }
     }
   ],
-  "contact": {
-    "email": "ouattarabadiori20@gmail.com",
-    "location": "Bobo-Dioulasso, Burkina Faso",
-    "linkedin": "linkedin.com/in/badior-o",
-    "github": "github.com/badior-o"
-  },
   "projects": [
     {
       "id": 1768704074441,
@@ -236,100 +129,230 @@
       "role": "Dev Fullstack / Chef de projet"
     },
     {
-      "id": "vanguard-brand",
-      "title": "Vanguard Brand Design",
-      "category": "Graphisme",
-      "description": "Identité visuelle monumentale pour une marque de luxe technologique.",
+      "id": "gourmet-digital",
+      "title": "Le Gourmet Digital",
+      "category": "Site Web",
+      "description": "Expérience culinaire numérique immersive avec réservation de tables en temps réel et menus interactifs visuels.",
       "tools": [
-        "Photoshop",
-        "Illustrator",
-        "After Effects"
+        "React",
+        "Framer Motion",
+        "Supabase"
       ],
-      "image": "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80",
+      "image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80",
       "year": 2025,
-      "role": "Lead Designer"
+      "role": "Lead Frontend Developer"
     },
     {
-      "id": "nexus-mobile",
-      "title": "Nexus Mobile Suite",
+      "id": "pharmaconnect",
+      "title": "PharmaConnect 24/7",
       "category": "Application",
-      "description": "Écosystème mobile pour la gestion domotique par IA.",
+      "description": "Plateforme e-santé révolutionnaire connectant patients et pharmacies pour livraison express et conseils sécurisés.",
       "tools": [
         "React Native",
-        "Firebase",
-        "Node.js"
-      ],
-      "image": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80",
-      "year": 2025,
-      "role": "Lead App Developer"
-    },
-    {
-      "id": "elysium-estates",
-      "title": "Elysium Estates",
-      "category": "Site Web",
-      "description": "Plateforme immobilière haut de gamme avec visites virtuelles 3D.",
-      "tools": [
-        "Three.js",
-        "React",
+        "Node.js",
         "MongoDB"
       ],
-      "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
-      "year": 2024,
-      "role": "Front-end Engineer"
+      "image": "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?auto=format&fit=crop&w=800&q=80",
+      "year": 2025,
+      "role": "Fullstack Engineer"
     },
     {
-      "id": "aegis-cyber",
-      "title": "Aegis Cyber-Security",
-      "category": "Graphisme",
-      "description": "Branding et interface pour un leader de la cybersécurité.",
+      "id": "autotech-diagnostics",
+      "title": "AutoTech Manager",
+      "category": "Application",
+      "description": "Solution SaaS pour garages modernes : diagnostics prédictifs via OBD-II, gestion de flotte et CRM client automatisé.",
       "tools": [
-        "Figma",
-        "Illustrator",
+        "Vue.js",
+        "Firebase",
+        "Python"
+      ],
+      "image": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80",
+      "year": 2024,
+      "role": "System Architect"
+    },
+    {
+      "id": "prestige-rentals",
+      "title": "Prestige Mobility",
+      "category": "Site Web",
+      "description": "Agence de location de véhicules premium avec vérification d'identité par IA et paiements crypto sécurisés.",
+      "tools": [
+        "Next.js",
+        "Solidity",
+        "Stripe"
+      ],
+      "image": "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80",
+      "year": 2024,
+      "role": "Lead Developer"
+    },
+    {
+      "id": "ecosmart-home",
+      "title": "EcoSmart Neural Home",
+      "category": "IoT / IA",
+      "description": "Système domotique autonome optimisant la consommation énergétique via des algorithmes d'apprentissage profond.",
+      "tools": [
+        "Python",
+        "TensorFlow",
         "React"
       ],
-      "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
-      "year": 2024,
-      "role": "Art Director"
-    },
-    {
-      "id": "stratosphere-cloud",
-      "title": "Stratosphere Cloud Portal",
-      "category": "Application",
-      "description": "Dashboard analytique pour infrastructures cloud distribuées.",
-      "tools": [
-        "Node.js",
-        "Grafana",
-        "Kubernetes"
-      ],
-      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
+      "image": "/uploads/1771191297070-Professional-product.png",
       "year": 2026,
-      "role": "Backend Architect"
+      "role": "AI Engineer"
     }
   ],
   "subscribers": [
     {
-      "email": "ouattarabadiori20@gmail.com",
-      "date": "2025-11-29T20:06:44.493Z"
-    },
-    {
       "email": "mindgraphixsolution@gmail.com",
       "date": "2026-01-18T02:46:47.074Z"
+    },
+    {
+      "email": "ouattarabadiori20@gmail.com",
+      "date": "2026-02-07T00:18:25.443Z"
     }
   ],
   "pendingSubscribers": [],
-  "receivedMessages": [
+  "hero": {
+    "badge": "Ingénierie de Précision & Esthétique Future",
+    "title": "BADIOR",
+    "subtitle": "Ouattara",
+    "description": "Architecte Digital spécialisé dans la conception d'écosystèmes numériques monumentaux, alliant rigueur mathématique et design immersif.",
+    "primaryCTA": "Explorer les Réalisations",
+    "secondaryCTA": "Consultation Stratégique"
+  },
+  "about": {
+    "titleMain": "Héritage",
+    "titleSub": "Architectural",
+    "quote": "Construire le code comme on érige une structure, avec une intention pure et une exécution sans faille.",
+    "description": "Mon approche de l'ingénierie logicielle transcende le simple développement; je conçois des solutions pérennes où chaque pixel et chaque fonction sont les briques d'une expérience utilisateur d'exception.",
+    "profileImage": "/uploads/1768703448637-profiljpg.jpg"
+  },
+  "bento": [
     {
-      "id": 1768706877993,
-      "date": "2026-01-18T03:27:57.993Z",
-      "name": "DIOR BAD",
-      "email": "mindgraphixsolution@gmail.com",
-      "company": "BHJ BX",
-      "projectType": "Recrutement / Poste: TI",
-      "budget": "N/A",
-      "timeline": "Permanent / Mission",
-      "message": "test",
-      "status": "unread",
-      "recruitment": true
+      "title": "Le Parcours",
+      "icon": "Briefcase",
+      "content": "Plus de 5 ans d'expertise dans la transformation de visions complexes en architectures logicielles élégantes.",
+      "className": "md:col-span-2 md:row-span-1",
+      "bg": "bg-indigo-500/10"
+    },
+    {
+      "title": "Formation",
+      "icon": "GraduationCap",
+      "content": "Master en Architecture des Systèmes d'Information - Spécialisation Systèmes Distribués.",
+      "className": "md:col-span-1 md:row-span-1",
+      "bg": "bg-fuchsia-500/10"
+    },
+    {
+      "title": "Vision",
+      "icon": "Terminal",
+      "content": "L'ingénierie est l'art de la structure. Je bâtis pour la performance et la scalabilité.",
+      "className": "md:col-span-1 md:row-span-2",
+      "bg": "bg-cyan-500/10"
+    },
+    {
+      "title": "Localisation",
+      "icon": "MapPin",
+      "content": "Opérant depuis Bobo-Dioulasso, Burkina Faso, avec une portée d'intervention internationale.",
+      "className": "md:col-span-2 md:row-span-1",
+      "bg": "bg-emerald-500/10"
     }
-  ]
+  ],
+  "contact": {
+    "email": "ouattarabadior5@gmail.com",
+    "location": "Bobo-Dioulasso, Burkina Faso",
+    "linkedin": "linkedin.com/in/badior-o",
+    "github": "github.com/badior-o"
+  },
+  "receivedMessages": [],
+  "statsHistory": [
+    {
+      "date": "2026-01-11",
+      "visits": 140,
+      "subs": 2,
+      "messages": 1
+    },
+    {
+      "date": "2026-01-12",
+      "visits": 165,
+      "subs": 1,
+      "messages": 3
+    },
+    {
+      "date": "2026-01-13",
+      "visits": 132,
+      "subs": 4,
+      "messages": 0
+    },
+    {
+      "date": "2026-01-14",
+      "visits": 189,
+      "subs": 3,
+      "messages": 5
+    },
+    {
+      "date": "2026-01-15",
+      "visits": 210,
+      "subs": 5,
+      "messages": 2
+    },
+    {
+      "date": "2026-01-16",
+      "visits": 195,
+      "subs": 2,
+      "messages": 4
+    },
+    {
+      "date": "2026-01-17",
+      "visits": 219,
+      "subs": 6,
+      "messages": 9
+    },
+    {
+      "date": "2026-01-18",
+      "visits": 26,
+      "subscribers": 1,
+      "messages": 0
+    },
+    {
+      "date": "2026-02-06",
+      "visits": 12,
+      "subscribers": 2,
+      "messages": 0
+    },
+    {
+      "date": "2026-02-07",
+      "visits": 29,
+      "subscribers": 2,
+      "messages": 0
+    },
+    {
+      "date": "2026-02-14",
+      "visits": 1,
+      "subscribers": 2,
+      "messages": 0
+    },
+    {
+      "date": "2026-02-15",
+      "visits": 39,
+      "subscribers": 2,
+      "messages": 0
+    },
+    {
+      "date": "2026-02-16",
+      "visits": 26,
+      "messages": 0,
+      "subscribers": 0
+    }
+  ],
+  "admin": {
+    "salt": "dddaca2aa59ff4481ce772c1240366df",
+    "hash": "88a9f147326bb1492c21db0239f1fe417aa697be15ae3627c03d169ec87afe859072cc796198c9912b1dc9b825d60911a321d5d863ad65f1a00e06f29693175d"
+  },
+  "testimonials": [],
+  "experiences": [],
+  "appointments": [],
+  "settings": {
+    "siteTitle": "Architecte Digital",
+    "siteDescription": "Portfolio d'exception",
+    "siteKeywords": "web design, development, react",
+    "enable2FA": true
+  }
 }

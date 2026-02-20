@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function SystemConsole() {
+  const { t } = useLanguage();
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -20,9 +22,9 @@ export function SystemConsole() {
       >
         <div className="flex items-center gap-3">
           <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-glow animate-pulse" />
-          <span className="text-[9px] font-mono text-white/40 uppercase tracking-[0.4em]">Active_Nexus</span>
+          <span className="text-[9px] font-mono text-white/40 uppercase tracking-[0.4em]">{t('systemConsole.activeNexus')}</span>
         </div>
-        <span className="text-[8px] font-mono text-white/20 uppercase tracking-widest pl-4">Badior_Architecture</span>
+        <span className="text-[8px] font-mono text-white/20 uppercase tracking-widest pl-4">{t('systemConsole.architecture')}</span>
       </motion.div>
 
       {/* Top Right: Clock & Coordinates (Polished) */}
@@ -33,7 +35,7 @@ export function SystemConsole() {
         className="absolute top-10 right-10 text-right font-mono"
       >
         <div className="text-lg font-light text-white/70 tracking-tighter">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-        <div className="text-[9px] text-primary/60 uppercase tracking-widest mt-1">48.8566 N // 2.3522 E</div>
+        <div className="text-[9px] text-primary/60 uppercase tracking-widest mt-1">{t('systemConsole.coordinates')}</div>
       </motion.div>
 
       {/* Bottom Left: Architectural Metrics (Cleaned) */}
@@ -44,7 +46,7 @@ export function SystemConsole() {
         className="absolute bottom-10 left-10 flex flex-col gap-6"
       >
          <div className="flex flex-col">
-            <span className="text-[7px] text-white/30 uppercase tracking-[0.5em] mb-2">Structural_Integrity</span>
+            <span className="text-[7px] text-white/30 uppercase tracking-[0.5em] mb-2">{t('systemConsole.structuralIntegrity')}</span>
             <div className="w-40 h-[1px] bg-white/5 relative">
                <motion.div 
                  initial={{ width: 0 }}
@@ -64,7 +66,7 @@ export function SystemConsole() {
         className="absolute bottom-10 right-10 text-right"
       >
         <div className="text-[8px] font-mono text-white/10 uppercase tracking-[0.3em]">
-          Core_Studio // Edition_2026
+          {t('systemConsole.coreStudio')}
         </div>
       </motion.div>
 

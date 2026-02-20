@@ -21,17 +21,17 @@ export function registerSmtpRoutes(app: express.Application) {
   app.post("/api/admin/smtp/test", express.json() as any, (async (req: any, res: any) => {
     const { to, subject, text } = req.body as { to?: string; subject?: string; text?: string };
     const transporter = createTransporter();
-    if (!transporter) return res.status(400).json({ message: "SMTP not configured" });
+    if (!transporter) return res.status(400).json({ message: "SMTP non configuré" });
 
     const target = to || process.env.TO_EMAIL;
-    if (!target) return res.status(400).json({ message: "No recipient specified and TO_EMAIL not set" });
+    if (!target) return res.status(400).json({ message: "Aucun destinataire spécifié et TO_EMAIL non défini" });
 
     try {
       const info = await transporter.sendMail({
         from: `${process.env.EMAIL_FROM_NAME || "Website"} <${process.env.SMTP_USER}>`,
         to: target,
-        subject: subject || "[Test] SMTP configuration",
-        text: text || "This is a test email from the application SMTP tester.",
+        subject: subject || "[Test] Configuration SMTP",
+        text: text || "Ceci est un email de test du système SMTP de l'application.",
       });
 
       res.json({ message: "Test email envoyé", info });
