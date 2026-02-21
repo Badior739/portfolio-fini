@@ -13,6 +13,7 @@ import { rateLimit } from './middleware/rateLimit';
 import { authMiddleware } from './middleware/auth';
 import { uploadHandler as uploadsUploadHandler, handleUpload, handleGetFile } from "./routes/uploads";
 import path from "path";
+import { handleHealthCheck } from "../api/health";
 
 export function createServer() {
   const app = express();
@@ -35,6 +36,8 @@ export function createServer() {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
+
+  app.get("/api/health", handleHealthCheck);
 
   // Fix RequestHandler mismatch errors by casting handlers to any
   app.get("/api/demo", handleDemo);

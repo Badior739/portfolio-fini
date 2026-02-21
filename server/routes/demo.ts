@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
-import { DemoResponse } from "@shared/api";
+import { DemoResponse } from "../../shared/api";
 
 export const handleDemo: RequestHandler = (req, res) => {
   const response: DemoResponse = {
-    message: "Bonjour du serveur Express",
+    message: "Hello from the backend!"
   };
-  res.status(200).json(response);
+  res.json(response);
 };
