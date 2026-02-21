@@ -105,5 +105,18 @@ export function createServer() {
     console.error('Failed to register uploads route', err);
   }
 
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('Unhandled Server Error:', err);
+    if (res.headersSent) {
+      return next(err);
+    }
+    res.status(500).json({ 
+      error: 'Internal Server Error', 
+      message: err.message || 'Unknown error',
+      path: req.path
+    });
+  });
+
   return app;
 }

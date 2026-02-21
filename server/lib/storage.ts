@@ -249,82 +249,87 @@ export async function updateContent(data: Partial<SiteData>) {
     return;
   }
 
-  // Handle Configs
-  if (data.hero) await db.insert(siteConfig).values({ key: 'hero', value: data.hero }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.hero } });
-  if (data.about) await db.insert(siteConfig).values({ key: 'about', value: data.about }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.about } });
-  if (data.contact) await db.insert(siteConfig).values({ key: 'contact', value: data.contact }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.contact } });
-  if (data.settings) await db.insert(siteConfig).values({ key: 'settings', value: data.settings }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.settings } });
-  if (data.bento) await db.insert(siteConfig).values({ key: 'bento', value: data.bento }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.bento } });
-  
-  if (data.admin) {
-    await db.insert(siteConfig).values({ key: 'admin', value: data.admin }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.admin } });
-  }
-
-  // Handle Projects
-  if (data.projects) {
-    await db.delete(projects);
-    if (data.projects.length > 0) {
-      await db.insert(projects).values(data.projects.map((p, i) => ({
-        id: p.id,
-        title: p.title,
-        category: p.category,
-        description: p.description,
-        tools: p.tools,
-        image: p.image,
-        year: p.year,
-        role: p.role,
-        link: p.link,
-        github: p.github,
-        displayOrder: i
-      })));
+  try {
+    // Handle Configs
+    if (data.hero) await db.insert(siteConfig).values({ key: 'hero', value: data.hero }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.hero } });
+    if (data.about) await db.insert(siteConfig).values({ key: 'about', value: data.about }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.about } });
+    if (data.contact) await db.insert(siteConfig).values({ key: 'contact', value: data.contact }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.contact } });
+    if (data.settings) await db.insert(siteConfig).values({ key: 'settings', value: data.settings }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.settings } });
+    if (data.bento) await db.insert(siteConfig).values({ key: 'bento', value: data.bento }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.bento } });
+    
+    if (data.admin) {
+      await db.insert(siteConfig).values({ key: 'admin', value: data.admin }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.admin } });
     }
-  }
 
-  // Handle Skills
-  if (data.skills) {
-    await db.delete(skills);
-    if (data.skills.length > 0) {
-      await db.insert(skills).values(data.skills.map((s, i) => ({
-        name: s.name,
-        icon: s.icon,
-        description: s.description,
-        expertise: s.expertise,
-        level: s.level,
-        color: s.color,
-        displayOrder: i
-      })));
+    // Handle Projects
+    if (data.projects) {
+      await db.delete(projects);
+      if (data.projects.length > 0) {
+        await db.insert(projects).values(data.projects.map((p, i) => ({
+          id: p.id,
+          title: p.title,
+          category: p.category,
+          description: p.description,
+          tools: p.tools,
+          image: p.image,
+          year: p.year,
+          role: p.role,
+          link: p.link,
+          github: p.github,
+          displayOrder: i
+        })));
+      }
     }
-  }
 
-  // Handle Experiences
-  if (data.experiences) {
-    await db.delete(experiences);
-    if (data.experiences.length > 0) {
-      await db.insert(experiences).values(data.experiences.map(e => ({
-        id: e.id,
-        year: e.year,
-        role: e.role,
-        company: e.company,
-        description: e.description || "",
-        icon: e.icon || "",
-        technologies: (e.technologies as string[]) || [],
-      })));
+    // Handle Skills
+    if (data.skills) {
+      await db.delete(skills);
+      if (data.skills.length > 0) {
+        await db.insert(skills).values(data.skills.map((s, i) => ({
+          name: s.name,
+          icon: s.icon,
+          description: s.description,
+          expertise: s.expertise,
+          level: s.level,
+          color: s.color,
+          displayOrder: i
+        })));
+      }
     }
-  }
 
-  // Handle Testimonials
-  if (data.testimonials) {
-    await db.delete(testimonials);
-    if (data.testimonials.length > 0) {
-      await db.insert(testimonials).values(data.testimonials.map(t => ({
-        id: t.id,
-        name: t.name,
-        role: t.role,
-        company: t.company || "",
-        content: t.content,
-        avatar: t.avatar || "",
-      })));
+    // Handle Experiences
+    if (data.experiences) {
+      await db.delete(experiences);
+      if (data.experiences.length > 0) {
+        await db.insert(experiences).values(data.experiences.map(e => ({
+          id: e.id,
+          year: e.year,
+          role: e.role,
+          company: e.company,
+          description: e.description || "",
+          icon: e.icon || "",
+          technologies: (e.technologies as string[]) || [],
+        })));
+      }
     }
+
+    // Handle Testimonials
+    if (data.testimonials) {
+      await db.delete(testimonials);
+      if (data.testimonials.length > 0) {
+        await db.insert(testimonials).values(data.testimonials.map(t => ({
+          id: t.id,
+          name: t.name,
+          role: t.role,
+          company: t.company || "",
+          content: t.content,
+          avatar: t.avatar || "",
+        })));
+      }
+    }
+  } catch (e) {
+    console.error("Failed to update content in DB:", e);
+    throw e; // Re-throw to let the caller handle it or global handler catch it
   }
 }
 
