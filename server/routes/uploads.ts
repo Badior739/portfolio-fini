@@ -101,7 +101,7 @@ async function uploadToDb(buffer: Buffer, filename: string, mimetype: string) {
     size: buffer.length
   }).returning({ id: storedFiles.id });
   
-  return `/api/uploads/${result[0].id}`;
+  return `/api/files/${result[0].id}`;
 }
 
 export const handleUpload: RequestHandler = async (req, res) => {

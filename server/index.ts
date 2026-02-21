@@ -102,8 +102,14 @@ export function createServer() {
     // Serve files from DB
     app.get('/api/files/:id', handleGetFile);
     
-    // Fix process.cwd access with any cast and static middleware cast
-    app.use('/uploads', express.static(path.join((process as any).cwd(), 'tmp', 'uploads')));
+    // Serve uploaded files - Safely for Vercel
+    try {
+      const uploadDir = path.join(require('os').tmpdir(), 'uploads');
+      // Only attempt to serve if directory exists, or just define it (express.static is safe if dir doesn't exist)
+      app.use('/uploads', express.static(uploadDir));
+    } catch (e) {
+      console.warn("Could not setup static uploads serving:", e);
+    }
   } catch (err) {
     console.error('Failed to register uploads route', err);
   }
