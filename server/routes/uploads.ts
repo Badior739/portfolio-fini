@@ -106,7 +106,7 @@ async function uploadToDb(buffer: Buffer, filename: string, mimetype: string) {
 
 export const handleUpload: RequestHandler = async (req, res) => {
   try {
-    const file = req.file;
+    const file = (req as any).file;
     if (!file) {
       return res.status(400).json({ message: "Aucun fichier fourni" });
     }
@@ -136,7 +136,7 @@ export const handleUpload: RequestHandler = async (req, res) => {
 
 export const handleGetFile: RequestHandler = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     if (isNaN(id)) {
       return res.status(400).json({ message: "ID invalide" });
     }
