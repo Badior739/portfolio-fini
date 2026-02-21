@@ -1,7 +1,9 @@
 import { motion, useMotionValue, useSpring, useTransform, MotionValue } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function SingularityCore() {
+  const isMobile = useIsMobile();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -32,7 +34,7 @@ export function SingularityCore() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.15)_0%,_transparent_50%)] animate-pulse" />
         
         {/* 2. Fluid Debris Field */}
-        {[...Array(20)].map((_, i) => (
+        {[...Array(isMobile ? 8 : 20)].map((_, i) => (
           <GlassFragment key={i} mouseX={mouseXSpring} mouseY={mouseYSpring} index={i} />
         ))}
       </motion.div>
