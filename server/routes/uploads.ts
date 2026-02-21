@@ -20,7 +20,8 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const USE_S3 = !!(process.env.S3_BUCKET);
-const USE_DB = process.env.STORAGE_TYPE === "db";
+// Force DB storage if configured, unless S3 is explicitly set
+const USE_DB = process.env.STORAGE_TYPE === "db" || (!!process.env.DATABASE_URL && !USE_S3);
 
 // Configure storage
 const storage = (USE_S3 || USE_DB)

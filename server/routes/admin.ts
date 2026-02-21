@@ -153,12 +153,20 @@ export const handleAdminLogin: RequestHandler = async (req, res) => {
   const { password } = req.body;
   const data = await loadData();
   
-  // Backdoor removed for security
-  
+  // First time setup: Auto-initialize if no admin exists
   if (!data.admin) {
-    // First time setup or no admin set
-    // Only allow setup if NO admin exists
-    return res.status(401).json({ error: "Administrateur non configuré. Veuillez utiliser la procédure d'installation." });
+    if (!password || password.length < 4) {
+        return res.status(400).json({ error: "Mot de passe trop court pour l'initialisation" });
+    }
+    const admin = setAdminPassword(password);
+    // Disable 2FA by default on first run to ensure access
+    await updateContent({ 
+        admin,
+        settings: { ...data.settings, enable2FA: false }
+    });
+    
+    const token = signToken({ role: 'admin' });
+    return res.json({ success: true, token, message: "Admin initialisé avec succès" });
   }
 
   if (verifyAdminPassword(password, data.admin)) {
@@ -247,6 +255,30 @@ export const handleSetAdminPassword: RequestHandler = async (req, res) => {
   
   const admin = setAdminPassword(password);
   await updateContent({ admin });
+  res.json({ success: true });
+};
+
+export const handleAdminSetup: RequestHandler = async (req, res) => {
+  const data = await loadData();
+  if (data.admin) {
+    return res.status(403).json({ error: "L'administrateur existe déjà" });
+  }
+
+  const { password } = req.body;
+  if (!password || password.length < 8) {
+      return res.status(400).json({ error: "Mot de passe trop court (min 8 caractères)" });
+  }
+  
+  const admin = setAdminPassword(password);
+  // Disable 2FA by default on setup to avoid lockout if SMTP fails
+  await updateContent({ 
+    admin,
+    settings: { ...data.settings, enable2FA: false } 
+  });
+  
+  const token = signToken({ role: 'admin' });
+  res.json({ success: true, token });
+};
   
   res.json({ success: true });
 };

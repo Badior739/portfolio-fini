@@ -7,7 +7,7 @@ import { uploadHandler, handleRecruitPost } from "./routes/recruit";
 import { handleResume } from "./routes/resume";
 import { handleCurriculumPDF } from "./routes/curriculum";
 import { registerSmtpRoutes } from "./routes/smtp";
-import { handleGetStats, handleIncrementVisit, handleIncrementMessage, handleGetContent, handleGetPublicContent, handleSaveContent, handleResetStats, handleAdminLogin, handleAdminVerify2FA, handleSetAdminPassword, handleBroadcastEmail, handleContactSubmission, handleAppointmentSubmission, handleAdminReply } from "./routes/admin";
+import { handleGetStats, handleIncrementVisit, handleIncrementMessage, handleGetContent, handleGetPublicContent, handleSaveContent, handleResetStats, handleAdminLogin, handleAdminVerify2FA, handleSetAdminPassword, handleBroadcastEmail, handleContactSubmission, handleAppointmentSubmission, handleAdminReply, handleAdminSetup } from "./routes/admin";
 import { handleSubscribe, handleGetSubscribers, handleRemoveSubscriber, handleConfirm } from "./routes/newsletter";
 import { rateLimit } from './middleware/rateLimit';
 import { authMiddleware } from './middleware/auth';
@@ -79,6 +79,7 @@ export function createServer() {
   
   app.post("/api/admin/reset", authMiddleware, handleResetStats);
   app.post('/api/admin/login', handleAdminLogin);
+  app.post('/api/admin/setup', handleAdminSetup);
   app.post('/api/admin/verify-2fa', handleAdminVerify2FA);
   app.post('/api/admin/password', authMiddleware, handleSetAdminPassword);
   app.post('/api/admin/broadcast', authMiddleware, handleBroadcastEmail);
