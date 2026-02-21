@@ -3,7 +3,6 @@ import { RequestHandler } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { exec } from "child_process";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { db } from "../db";
 import { storedFiles } from "../db/schema";
