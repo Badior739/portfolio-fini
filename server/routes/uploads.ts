@@ -8,15 +8,18 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { db } from "../db";
 import { storedFiles } from "../db/schema";
 import { eq } from "drizzle-orm";
+import os from "os";
 
-// Fix process.cwd access with any cast
-const uploadDir = path.join((process as any).cwd(), "tmp", "uploads");
-if (!fs.existsSync(uploadDir)) {
-  try {
+// Use OS temp dir for serverless safety
+const uploadDir = path.join(os.tmpdir(), "uploads");
+
+// Ensure upload directory exists - safely
+try {
+  if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
-  } catch (e) {
-    console.warn("Impossible de créer le répertoire d'upload (peut-être en lecture seule)", e);
   }
+} catch (e) {
+  console.warn("Impossible de créer le répertoire d'upload (peut-être en lecture seule)", e);
 }
 
 const USE_S3 = !!(process.env.S3_BUCKET);
@@ -98,104 +101,68 @@ async function uploadToDb(buffer: Buffer, filename: string, mimetype: string) {
     data: base64,
     size: buffer.length
   }).returning({ id: storedFiles.id });
-
-  // Return a local API URL that serves this file
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  // Note: we can't easily guess the full domain here without configuration, 
-  // but we can return a relative path or use SITE_URL if set.
-  // For now, let's assume relative path which works for frontend
-  return `/api/files/${result[0].id}`;
-}
-
-function runScanIfConfigured(filePath: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const cmd = process.env.SCAN_COMMAND;
-    if (!cmd) return resolve(true); // nothing to do
-    // replace placeholder {file} in command if present
-    const final = cmd.includes('{file}') ? cmd.replace(/\{file\}/g, `"${filePath.replace(/"/g, '\\"')}"`) : `${cmd} "${filePath.replace(/"/g, '\\"')}"`;
-    exec(final, (err, _stdout, _stderr) => {
-      if (err) {
-        console.error('Scan command failed:', err);
-        return resolve(false);
-      }
-      resolve(true);
-    });
-  });
+  
+  return `/api/uploads/${result[0].id}`;
 }
 
 export const handleUpload: RequestHandler = async (req, res) => {
   try {
-    const file = (req as any).file;
-    if (!file) return res.status(400).json({ success: false, message: "Aucun fichier reçu" });
-
-    if (USE_S3) {
-      // Memory Storage -> S3
-      if (!file.buffer) {
-        return res.status(500).json({ success: false, message: "Erreur interne (buffer manquant)" });
-      }
-      try {
-        const url = await uploadToS3(file.buffer, file.originalname, file.mimetype);
-        return res.json({ success: true, url });
-      } catch (e) {
-        console.error("S3 Upload Error:", e);
-        return res.status(500).json({ success: false, message: "Échec de l'upload vers S3" });
-      }
-    } else if (USE_DB) {
-       // Memory Storage -> Postgres
-       if (!file.buffer) {
-        return res.status(500).json({ success: false, message: "Erreur interne (buffer manquant)" });
-      }
-      try {
-        const url = await uploadToDb(file.buffer, file.originalname, file.mimetype);
-        return res.json({ success: true, url });
-      } catch (e) {
-        console.error("DB Upload Error:", e);
-        return res.status(500).json({ success: false, message: "Échec de l'upload vers la DB" });
-      }
-    } else {
-      // Disk Storage
-      if (!file.path) {
-         return res.status(500).json({ success: false, message: "Erreur interne (path manquant)" });
-      }
-      
-      const localPath = file.path;
-      // optional scan
-      const ok = await runScanIfConfigured(localPath);
-      if (!ok) {
-        try { fs.unlinkSync(localPath); } catch (e) {}
-        return res.status(400).json({ success: false, message: 'Fichier rejeté par le scanner' });
-      }
-
-      const url = `/uploads/${file.filename}`;
-      res.json({ success: true, url });
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: "Aucun fichier fourni" });
     }
-  } catch (e) {
-    console.error("Upload handler error:", e);
-    res.status(500).json({ success: false, message: "Erreur serveur" });
+
+    let url: string;
+    
+    if (USE_S3) {
+      url = await uploadToS3(file.buffer!, file.originalname, file.mimetype);
+    } else if (USE_DB) {
+      url = await uploadToDb(file.buffer!, file.originalname, file.mimetype);
+    } else {
+      // Local file storage
+      url = `/uploads/${file.filename}`;
+    }
+
+    res.json({ 
+      url,
+      filename: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size
+    });
+  } catch (error: any) {
+    console.error("Upload error:", error);
+    res.status(500).json({ message: "Erreur lors de l'upload", error: error.message });
   }
 };
 
 export const handleGetFile: RequestHandler = async (req, res) => {
   try {
-    const id = parseInt(req.params.id as string);
-    if (isNaN(id)) return res.status(400).send("Invalid ID");
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "ID invalide" });
+    }
 
-    if (!db) return res.status(500).send("DB not configured");
+    if (!db) {
+      return res.status(500).json({ message: "Base de données non configurée" });
+    }
 
-    const result = await db.select().from(storedFiles).where(eq(storedFiles.id, id));
-    if (result.length === 0) return res.status(404).send("File not found");
+    const file = await db.query.storedFiles.findFirst({
+      where: eq(storedFiles.id, id)
+    });
 
-    const file = result[0];
+    if (!file) {
+      return res.status(404).json({ message: "Fichier non trouvé" });
+    }
+
     const buffer = Buffer.from(file.data, 'base64');
 
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Length', file.size);
-    // Optional: caching
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); 
+    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
     
     res.send(buffer);
-  } catch (e) {
-    console.error("Get file error:", e);
-    res.status(500).send("Server Error");
+  } catch (error: any) {
+    console.error("Get file error:", error);
+    res.status(500).json({ message: "Erreur lors de la récupération du fichier" });
   }
 };
