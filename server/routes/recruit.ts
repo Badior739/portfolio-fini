@@ -10,7 +10,8 @@ import { EmailTemplates } from "../lib/email-templates";
 type MulterFile = any;
 
 // Fix process.cwd access with any cast
-const upload = multer({ dest: path.join((process as any).cwd(), "tmp/uploads") });
+const storage = multer.memoryStorage();
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit
 
 export const handleRecruit: RequestHandler = (req, res) => {
   // multer will have populated req.file and req.body
@@ -24,11 +25,6 @@ export const handleRecruitPost: RequestHandler = async (req, res) => {
     const body = req.body as any;
     const file = (req as any).file as MulterFile | undefined;
 
-    // Ensure upload dir exists
-    // Fix process.cwd access with any cast
-    const uploadDir = path.join((process as any).cwd(), "tmp/uploads");
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
     const fromName = body.name || "Unknown";
     const fromEmail = body.email || "no-reply@example.com";
     const company = body.company || "";
@@ -36,11 +32,11 @@ export const handleRecruitPost: RequestHandler = async (req, res) => {
 
     // Prepare attachment info
     const attachments: any[] = [];
-    if (file) {
-      // move file to uploads with original name
-      const target = path.join(uploadDir, `${Date.now()}-${file.originalname}`);
-      fs.renameSync(file.path, target);
-      attachments.push({ filename: file.originalname, path: target });
+    if (file && file.buffer) {
+      attachments.push({ 
+        filename: file.originalname, 
+        content: file.buffer 
+      });
     }
 
     // If SMTP settings available, send email

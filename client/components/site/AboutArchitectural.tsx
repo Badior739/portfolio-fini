@@ -16,7 +16,7 @@ export function AboutArchitectural({ data, bento }: { data?: AboutContent; bento
     titleSub: language === 'fr' ? (data?.titleSub || t('about.titleSub')) : t('about.titleSub'),
     quote: language === 'fr' ? (data?.quote || t('about.quote')) : t('about.quote'),
     description: t('about.description'),
-    profileImage: data?.profileImage || "/uploads/1768703448637-profiljpg.jpg"
+    profileImage: data?.profileImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80" // Placeholder architectural/professional
   };
 
   const containerRef = useRef<HTMLDivElement>(null);
