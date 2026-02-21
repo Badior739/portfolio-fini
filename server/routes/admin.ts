@@ -279,9 +279,6 @@ export const handleAdminSetup: RequestHandler = async (req, res) => {
   const token = signToken({ role: 'admin' });
   res.json({ success: true, token });
 };
-  
-  res.json({ success: true });
-};
 
 export const handleBroadcastEmail: RequestHandler = async (req, res) => {
   const { subject, message } = req.body;
