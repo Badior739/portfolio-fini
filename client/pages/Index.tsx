@@ -19,6 +19,7 @@ import { motion, AnimatePresence, useScroll, useSpring, useTransform } from "fra
 import { ArrowUp, Filter, Briefcase, GraduationCap, Mail, MapPin, ArrowRight, Github, Linkedin, Terminal, Code, Cpu, Globe, ExternalLink, Zap, Box, Layers, ArrowUpRight, Clock, Video } from "lucide-react";
 import { Project, SiteData, Skill } from "@shared/api";
 import { useLanguage } from "@/context/LanguageContext";
+import { API_BASE_URL } from "@/config";
 
 function Typewriter({ phrases, speed = 60 }: { phrases: string[]; speed?: number }) {
   const [current, setCurrent] = useState(0);
@@ -110,12 +111,12 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/admin/visit', { method: 'POST' }).catch(() => {});
+    fetch(`${API_BASE_URL}/api/admin/visit`, { method: 'POST' }).catch(() => {});
 
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/content');
+        const res = await fetch(`${API_BASE_URL}/api/content`);
         const data = (await res.json()) as Partial<SiteData>;
         // Use updated skills from data/skills.ts if available, or fallback to API
         setRenderSkills(skills.length > 0 ? skills : (data.skills || []));

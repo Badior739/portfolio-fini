@@ -6,6 +6,7 @@ import { AdminHeader, AdminCard, CMSField, SaveBar } from './AdminShared';
 import { SiteSettings } from '@shared/api';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { API_BASE_URL } from "@/config";
 
 interface AdminSettingsProps {
   settings: SiteSettings;
@@ -27,7 +28,7 @@ export function AdminSettings({ settings, setSettings, onBackup, onLogout, onSav
       return toast({ title: "Erreur", description: "Les mots de passe ne correspondent pas.", variant: "destructive" });
     }
     try {
-      const res = await fetch('/api/admin/password', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/password`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',

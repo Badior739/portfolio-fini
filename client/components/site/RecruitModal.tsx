@@ -1,6 +1,7 @@
 // Add missing React import
 import React, { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config";
 
 export function RecruitModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [name, setName] = useState("");
@@ -26,7 +27,7 @@ export function RecruitModal({ open, onClose }: { open: boolean; onClose: () => 
 
     setSending(true);
     try {
-      const res = await fetch("/api/recruit", { method: "POST", body: fd });
+      const res = await fetch(`${API_BASE_URL}/api/recruit`, { method: "POST", body: fd });
       const json = await res.json();
       if (res.ok || res.status === 202) {
         toast({ title: "Message envoyé", description: json.message || "Merci, fichier reçu." });

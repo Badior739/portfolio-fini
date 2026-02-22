@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+import { API_BASE_URL } from "@/config";
 
 export function Footer() {
   const { t, language } = useLanguage();
@@ -17,7 +18,7 @@ export function Footer() {
     }
     
     try {
-      const res = await fetch("/api/newsletter/subscribe", {
+      const res = await fetch(`${API_BASE_URL}/api/newsletter/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

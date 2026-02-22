@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { API_BASE_URL } from "@/config";
 
 interface TimeSlot {
   time: string;
@@ -68,7 +69,7 @@ export function AppointmentScheduler() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/appointment', {
+      const res = await fetch(`${API_BASE_URL}/api/appointment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

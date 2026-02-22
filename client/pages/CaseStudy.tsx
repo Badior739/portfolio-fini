@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { Layout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { projects as defaultProjects } from "@/data/projects";
+import { API_BASE_URL } from "@/config";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -17,7 +18,7 @@ export default function CaseStudy() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch('/api/admin/content');
+        const res = await fetch(`${API_BASE_URL}/api/admin/content`);
         const data = await res.json();
         if (data.projects?.length) {
           setProjectData(data.projects);

@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Zap, Download, LayoutDashboard, Activity } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { API_BASE_URL } from "@/config";
 
 interface AdminAboutProps {
   about: AboutContent;
@@ -56,7 +57,7 @@ export function AdminAbout({ about, setAbout, bento, setBento, onSave, loading, 
                    if (file) {
                       const formData = new FormData();
                       formData.append('file', file);
-                      const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+                      const res = await fetch(`${API_BASE_URL}/api/uploads`, { method: 'POST', body: formData });
                       const data = await res.json();
                       if (data.success) {
                         setAbout({...about, profileImage: data.url});

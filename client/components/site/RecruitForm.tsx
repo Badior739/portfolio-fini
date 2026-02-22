@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { ShieldCheck, Briefcase, User, Mail, Phone, FileText, Send, X, Clock, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { API_BASE_URL } from "@/config";
 
 // Temporary inline components due to file corruption issues
 const toast = ({ title, description }: { title?: string; description?: string }) => {
@@ -84,7 +85,7 @@ export function RecruitForm({ open, onClose }: { open: boolean; onClose: () => v
       fd.append("message", formData.message);
       if (file) fd.append("file", file);
 
-      const response = await fetch("/api/recruit", {
+      const response = await fetch(`${API_BASE_URL}/api/recruit`, {
         method: "POST",
         body: fd,
       });

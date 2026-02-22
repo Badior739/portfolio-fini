@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/config";
 
 export default function SmtpConfig() {
   const [cfg, setCfg] = useState<any>(null);
@@ -9,7 +10,7 @@ export default function SmtpConfig() {
   const [text, setText] = useState("Ceci est un email de test.");
 
   useEffect(() => {
-    fetch("/api/admin/smtp")
+    fetch(`${API_BASE_URL}/api/admin/smtp`)
       .then((r) => r.json())
       .then(setCfg)
       .catch(() => setCfg(null));
@@ -20,7 +21,7 @@ export default function SmtpConfig() {
     setLoading(true);
     setTestResult(null);
     try {
-      const res = await fetch("/api/admin/smtp/test", {
+      const res = await fetch(`${API_BASE_URL}/api/admin/smtp/test`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: to || undefined, subject, text }),

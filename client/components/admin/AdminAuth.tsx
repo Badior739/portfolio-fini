@@ -3,6 +3,7 @@ import { ShieldCheck, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from '@/hooks/use-toast';
+import { API_BASE_URL } from "@/config";
 
 interface AdminAuthProps {
   onSuccess: (password: string) => void;
@@ -20,7 +21,7 @@ export function AdminAuth({ onSuccess, onClose }: AdminAuthProps) {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/login', { 
+      const res = await fetch(`${API_BASE_URL}/api/admin/login`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ password }) 
@@ -57,7 +58,7 @@ export function AdminAuth({ onSuccess, onClose }: AdminAuthProps) {
     
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/verify-2fa', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/verify-2fa`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: otpCode })

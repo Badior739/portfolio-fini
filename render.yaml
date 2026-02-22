@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: badior-portfolio-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build:server
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: STORAGE_TYPE
+        value: db
+      - key: SITE_ORIGIN
+        value: https://badiorportfolio.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: badior-db
+          property: connectionString
+      - key: JWT_SECRET
+        generate: true
+      - key: ADMIN_PASSWORD
+        value: MGS_Admin_2026!
+
+databases:
+  - name: badior-db
+    plan: free
+    databaseName: badior
+    user: badior
+

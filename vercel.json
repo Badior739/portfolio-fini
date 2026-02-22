@@ -1,16 +1,8 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "functions": {
-    "api/**/*.ts": {
-      "memory": 1024,
-      "maxDuration": 10,
-      "includeFiles": "server/**/*"
-    }
-  },
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/spa",
   "framework": "vite"

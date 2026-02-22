@@ -3,6 +3,7 @@ import { Plus, Trash2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Project } from '@shared/api';
 import { toast } from '@/hooks/use-toast';
+import { API_BASE_URL } from "@/config";
 import { AdminHeader, AdminCard, CMSField, SaveBar } from './AdminShared';
 
 interface AdminProjectsProps {
@@ -47,7 +48,7 @@ export function AdminProjects({ projects, setProjects, onSave, loading, isDirty 
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+      const res = await fetch(`${API_BASE_URL}/api/uploads`, { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) {
         updateProject(index, { image: data.url });

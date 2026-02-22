@@ -11,6 +11,7 @@ import {
   Experience, Project, ReceivedMessage, SiteData, SiteSettings, Skill, StatsEntry, Subscriber, Testimonial, Appointment 
 } from '@shared/api';
 import { Button } from '@/components/ui/button';
+import { API_BASE_URL } from "@/config";
 
 // Modular Components
 import { AdminTab, NavBtn, Label } from '../admin/AdminShared';
@@ -96,7 +97,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const loadStats = async () => {
     try {
-      const res = await fetch('/api/admin/stats', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
       const data = (await res.json()) as Partial<SiteData>;
@@ -172,7 +173,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
     const updatedMessages = receivedMessages.filter(m => m.id !== id);
     setReceivedMessages(updatedMessages);
     try {
-      await fetch('/api/admin/content', {
+      await fetch(`${API_BASE_URL}/api/admin/content`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -189,7 +190,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
     const updatedAppointments = appointments.filter(a => a.id !== id);
     setAppointments(updatedAppointments);
     try {
-      await fetch('/api/admin/content', {
+      await fetch(`${API_BASE_URL}/api/admin/content`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
   };
 
   const handleReply = async (to: string, subject: string, message: string) => {
-    const res = await fetch('/api/admin/reply', {
+    const res = await fetch(`${API_BASE_URL}/api/admin/reply`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -217,7 +218,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
     if (!window.confirm(`Voulez-vous vraiment désabonner ${email} ?`)) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/newsletter/remove', {
+      const res = await fetch(`${API_BASE_URL}/api/newsletter/remove`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -243,7 +244,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
     if (!emailSubject || !emailBody) return toast({ title: "Erreur", description: "Champs vides", variant: "destructive" });
     setLoading(true);
     try {
-       const res = await fetch('/api/admin/broadcast', {
+       const res = await fetch(`${API_BASE_URL}/api/admin/broadcast`, {
          method: 'POST',
          headers: { 
            'Content-Type': 'application/json',
