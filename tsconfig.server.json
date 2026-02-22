@@ -9,7 +9,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noEmit": false
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "isolatedModules": false
   },
   "include": ["server/**/*", "shared/**/*"],
   "exclude": ["client", "vite.config.ts", "vite.config.server.ts"]
