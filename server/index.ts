@@ -46,8 +46,8 @@ export function createServer() {
 
   app.use(cors(corsOptions));
   
-  // Handle preflight requests explicitly
-  app.options('*', cors(corsOptions));
+  // Handle preflight requests explicitly (Express 5 compatible wildcard)
+  app.options('(.*)', cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
