@@ -55,6 +55,11 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Root route for health check / reassurance
+  app.get("/", (_req, res) => {
+    res.send("API Server is running 🚀. Use /api/ endpoints.");
+  });
+
   // Log parsed body for debugging
   app.use((req, res, next) => {
     if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
