@@ -27,7 +27,7 @@ export function AdminAuth({ onSuccess, onClose }: AdminAuthProps) {
         body: JSON.stringify({ password }) 
       });
       const data = await res.json();
-      console.log('Login response:', res.status, data);
+      console.log('Login response:', res.status, JSON.stringify(data));
       if (res.ok) {
         if (data.requires2FA) {
           setRequires2FA(true);

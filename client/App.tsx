@@ -31,7 +31,7 @@ const App = () => (
               <Preloader />
               <CustomCursor />
               <ScrollSpy />
-              {/* <Toaster /> */}
+              <Toaster />
               {/* <Sonner /> */}
               <Routes>
                 <Route path="/" element={<Index />} />

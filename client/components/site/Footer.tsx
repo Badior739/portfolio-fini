@@ -18,19 +18,24 @@ export function Footer() {
     }
     
     try {
+      console.log('Subscribing to:', `${API_BASE_URL}/api/newsletter/subscribe`);
       const res = await fetch(`${API_BASE_URL}/api/newsletter/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
-      console.log('Newsletter subscription response:', res.status, data);
+      console.log('Newsletter subscription response:', res.status, JSON.stringify(data));
       if (res.ok) {
         toast({ title: t('footer.successTitle'), description: t('footer.successDesc') });
         setEmail("");
       } else {
-        console.error('Newsletter error:', data);
-        toast({ title: t('footer.errorTitle'), description: data.message || t('footer.errorDesc') });
+        console.error('Newsletter error:', JSON.stringify(data));
+        toast({ 
+          title: data.message === 'Cet email est déjà inscrit' ? "Déjà inscrit" : t('footer.errorTitle'), 
+          description: data.message || t('footer.errorDesc'),
+          variant: "destructive"
+        });
       }
     } catch (error) {
       toast({ title: t('footer.subscribeErrorTitle'), description: t('footer.subscribeErrorDesc') });

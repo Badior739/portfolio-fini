@@ -91,6 +91,7 @@ export function RecruitForm({ open, onClose }: { open: boolean; onClose: () => v
       });
 
       const data = await response.json();
+      console.log('Recruit response:', response.status, JSON.stringify(data));
 
       if (response.ok || response.status === 202) {
         toast({ 

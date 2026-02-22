@@ -52,6 +52,7 @@ export const handleSubscribe: RequestHandler = async (req, res) => {
     );
     
     if (exists) {
+      console.log('Subscribe failed: Email already exists in subscribers');
       return res
         .status(400)
         .json({ success: false, message: "Cet email est déjà inscrit" });
@@ -63,7 +64,8 @@ export const handleSubscribe: RequestHandler = async (req, res) => {
     );
 
     if (pendingExists) {
-       return res
+      console.log('Subscribe failed: Email already exists in pending');
+      return res
         .status(400)
         .json({ success: false, message: "Cet email est déjà en attente de confirmation. Vérifiez vos emails." });
     }

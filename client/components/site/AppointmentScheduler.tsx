@@ -79,6 +79,8 @@ export function AppointmentScheduler() {
         })
       });
 
+      const data = await res.json();
+      console.log('Appointment response:', res.status, JSON.stringify(data));
       if (res.ok) {
         setStep(4);
         toast({
@@ -86,12 +88,13 @@ export function AppointmentScheduler() {
           description: t('appointment.scheduler.toast.confirmedDesc'),
         });
       } else {
-        throw new Error("Failed to schedule");
+        throw new Error(data.message || "Failed to schedule");
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Appointment error:', error);
       toast({
         title: t('appointment.scheduler.toast.error'),
-        description: t('appointment.scheduler.toast.errorDesc'),
+        description: error.message || t('appointment.scheduler.toast.errorDesc'),
         variant: "destructive"
       });
     } finally {

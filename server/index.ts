@@ -57,7 +57,7 @@ export function createServer() {
 
   // Root route for health check / reassurance
   app.get("/", (_req, res) => {
-    res.send("API Server is running 🚀. Use /api/ endpoints.");
+    res.send("API Server is running 🚀 (v2). Use /api/ endpoints.");
   });
 
   // Log parsed body for debugging
