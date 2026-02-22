@@ -31,7 +31,7 @@ export function AdminNewsletter({
   const [search, setSearch] = React.useState('');
 
   const filteredSubscribers = subscribers.filter(sub => 
-    sub.email.toLowerCase().includes(search.toLowerCase())
+    (sub.email || '').toLowerCase().includes((search || '').toLowerCase())
   );
 
   const exportSubscribers = () => {

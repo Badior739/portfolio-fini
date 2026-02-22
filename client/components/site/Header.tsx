@@ -30,6 +30,7 @@ export function Header({ onOpenRecruit }: { onOpenRecruit: () => void }) {
     const keys = new Set<string>();
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!e.key) return;
       keys.add(e.key.toLowerCase());
       if (keys.has('control') && keys.has('b') && keys.has('enter')) {
         e.preventDefault();
@@ -39,6 +40,7 @@ export function Header({ onOpenRecruit }: { onOpenRecruit: () => void }) {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.key) return;
       keys.delete(e.key.toLowerCase());
     };
 

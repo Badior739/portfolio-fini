@@ -16,6 +16,7 @@ interface ProjectCardProps {
 }
 
 const ToolIcon = ({ name }: { name: string }) => {
+  if (!name) return <Zap size={12} />;
   const n = name.toLowerCase();
   if (n.includes("react") || n.includes("next")) return <Code2 size={12} />;
   if (n.includes("node") || n.includes("express")) return <Cpu size={12} />;
