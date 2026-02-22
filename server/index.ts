@@ -24,10 +24,17 @@ export function createServer() {
     origin: [
       'http://localhost:8080',
       'http://localhost:3000',
+      'https://badiorportfolio.vercel.app',
+      'https://portfolio-fini.vercel.app', // Added fallback just in case
       process.env.SITE_ORIGIN || ''
     ].filter(Boolean),
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
+  
+  // Handle preflight requests explicitly if needed (cors middleware usually handles this)
+  app.options('*', cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
