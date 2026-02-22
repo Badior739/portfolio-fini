@@ -24,10 +24,12 @@ export function Footer() {
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
+      console.log('Newsletter subscription response:', res.status, data);
       if (res.ok) {
         toast({ title: t('footer.successTitle'), description: t('footer.successDesc') });
         setEmail("");
       } else {
+        console.error('Newsletter error:', data);
         toast({ title: t('footer.errorTitle'), description: data.message || t('footer.errorDesc') });
       }
     } catch (error) {

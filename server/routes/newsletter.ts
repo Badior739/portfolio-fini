@@ -28,14 +28,17 @@ async function sendWelcomeEmail(email: string) {
 
 export const handleSubscribe: RequestHandler = async (req, res) => {
   try {
+    console.log('Subscribe request body:', req.body);
     const { email } = req.body;
 
     if (!email || typeof email !== "string") {
+      console.log('Subscribe failed: Email missing or not string');
       return res.status(400).json({ success: false, message: "Email requis" });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      console.log('Subscribe failed: Invalid email format');
       return res
         .status(400)
         .json({ success: false, message: "Email invalide" });

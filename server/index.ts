@@ -25,6 +25,10 @@ export function createServer() {
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     console.log(`Request from origin: ${origin} | Method: ${req.method} | Path: ${req.path}`);
+    if (req.method === 'POST') {
+      console.log('Headers:', JSON.stringify(req.headers));
+      // Body might not be parsed yet if this is before express.json()
+    }
     next();
   });
 
@@ -50,6 +54,14 @@ export function createServer() {
   app.options(/.*/, cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Log parsed body for debugging
+  app.use((req, res, next) => {
+    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+      console.log(`[BodyParser] ${req.method} ${req.path} Body:`, JSON.stringify(req.body).substring(0, 200));
+    }
+    next();
+  });
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
