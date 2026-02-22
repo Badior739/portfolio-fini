@@ -1,9 +1,11 @@
 import { RequestHandler } from "express";
-import { db, isDbConfigured } from "../server/db/index";
+import { db } from "../server/db";
 import { sql } from "drizzle-orm";
 
-export const handleHealthCheck: RequestHandler = async (req, res) => {
-  const status = {
+const isDbConfigured = () => !!process.env.DATABASE_URL;
+
+export default async function handler(req: any, res: any) {
+  const status: any = {
     uptime: process.uptime(),
     timestamp: Date.now(),
     env: {
@@ -32,3 +34,5 @@ export const handleHealthCheck: RequestHandler = async (req, res) => {
 
   res.status(status.db_connection === 'failed' ? 500 : 200).json(status);
 };
+
+export const handleHealthCheck = handler;
