@@ -1,10 +1,10 @@
 
 import type { Request, Response } from 'express';
+// Use relative path to source file, Vercel build will handle it
+import { createServer } from '../server/index';
 
 export default async function handler(req: Request, res: Response) {
   try {
-    // Dynamic import to catch initialization errors
-    const { createServer } = await import('../server/index');
     const app = createServer();
     
     // Forward the request to the Express app
