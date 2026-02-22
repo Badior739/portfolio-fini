@@ -20,21 +20,34 @@ export function createServer() {
 
   // Middleware
   // Fix Express overload errors by casting middleware to any
-  app.use(cors({
+  
+  // Debug middleware to log origin
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    console.log(`Request from origin: ${origin} | Method: ${req.method} | Path: ${req.path}`);
+    next();
+  });
+
+  const corsOptions = {
     origin: [
       'http://localhost:8080',
       'http://localhost:3000',
       'https://badiorportfolio.vercel.app',
-      'https://portfolio-fini.vercel.app', // Added fallback just in case
-      process.env.SITE_ORIGIN || ''
+      'https://portfolio-fini.vercel.app', 
+      process.env.SITE_ORIGIN || '',
+      /\.vercel\.app$/ // Allow all vercel subdomains for preview deployments
     ].filter(Boolean),
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
+
+  app.use(cors(corsOptions));
   
-  // Handle preflight requests explicitly if needed (cors middleware usually handles this)
-  app.options('*', cors());
+  // Handle preflight requests explicitly
+  app.options('*', cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
