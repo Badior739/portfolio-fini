@@ -3,7 +3,7 @@ services:
     name: badior-portfolio-backend
     env: node
     plan: free
-    buildCommand: npm install && npm run build:server
+    buildCommand: npm install --include=dev && npm run build:server
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
