@@ -15,7 +15,6 @@ import { handleSubscribe, handleGetSubscribers, handleRemoveSubscriber, handleCo
 import { rateLimit } from './middleware/rateLimit';
 import { authMiddleware } from './middleware/auth';
 import { uploadHandler as uploadsUploadHandler, handleUpload, handleGetFile } from "./routes/uploads";
-import path from "path";
 import { handleHealthCheck } from "../api/health";
 
 export function createServer() {
