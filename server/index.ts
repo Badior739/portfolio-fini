@@ -54,7 +54,7 @@ export function createServer() {
   app.use(cors(corsOptions));
   
   // Handle preflight requests explicitly (Express 5 compatible wildcard)
-  app.options("*", cors(corsOptions));
+  app.options(/.*/, cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -169,7 +169,7 @@ export function createServer() {
   });
 
   // Catch-all route for SPA (MUST be after API routes)
-  app.get("*", (req, res) => {
+  app.get(/.*/, (req, res) => {
     // If it's an API call that wasn't handled, 404
     if (req.path.startsWith("/api")) {
       return res.status(404).json({ error: "Not Found" });
