@@ -3,15 +3,14 @@ services:
     name: badior-portfolio-backend
     env: node
     plan: free
-    buildCommand: npm install --include=dev && npm run build:server
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
       - key: STORAGE_TYPE
         value: db
-      - key: SITE_ORIGIN
-        value: https://badiorportfolio.vercel.app
+      # SITE_ORIGIN will be inferred from RENDER_EXTERNAL_URL if not set
       - key: DATABASE_URL
         fromDatabase:
           name: badior-db

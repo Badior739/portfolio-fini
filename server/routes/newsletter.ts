@@ -79,7 +79,8 @@ export const handleSubscribe: RequestHandler = async (req, res) => {
       
       await addSubscriber(email, token, expires);
 
-      const confirmUrl = `${process.env.SITE_ORIGIN || 'http://localhost:8080'}/api/newsletter/confirm?token=${token}`;
+      const baseUrl = process.env.SITE_ORIGIN || process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080';
+      const confirmUrl = `${baseUrl}/api/newsletter/confirm?token=${token}`;
 
       // If SMTP configured, send email; otherwise, return the confirmUrl for dev/testing
       const transporter = await createTransporter();

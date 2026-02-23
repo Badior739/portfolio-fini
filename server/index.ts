@@ -1,7 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config({ override: true });
+import { sql } from "drizzle-orm";
 import express from "express";
 import cors from "cors";
+import path from "path";
+import fs from "fs";
 import { handleDemo } from "./routes/demo";
 import { uploadHandler, handleRecruitPost } from "./routes/recruit";
 import { handleResume } from "./routes/resume";
@@ -39,6 +42,7 @@ export function createServer() {
       'https://badiorportfolio.vercel.app',
       'https://portfolio-fini.vercel.app', 
       process.env.SITE_ORIGIN || '',
+      process.env.RENDER_EXTERNAL_URL || '',
       /\.vercel\.app$/ // Allow all vercel subdomains for preview deployments
     ].filter(Boolean),
     credentials: true,
@@ -56,9 +60,9 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true }));
 
   // Root route for health check / reassurance
-  app.get("/", (_req, res) => {
-    res.send("API Server is running 🚀 (v2). Use /api/ endpoints.");
-  });
+  // app.get("/", (_req, res) => {
+  //   res.send("API Server is running 🚀 (v2). Use /api/ endpoints.");
+  // });
 
   // Log parsed body for debugging
   app.use((req, res, next) => {
@@ -160,8 +164,25 @@ export function createServer() {
     res.status(500).json({ 
       error: 'Internal Server Error', 
       message: err.message || 'Unknown error',
-      path: req.path
+      path: req.path,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
+  });
+
+  // Catch-all route for SPA (MUST be after API routes)
+  app.get("*", (req, res) => {
+    // If it's an API call that wasn't handled, 404
+    if (req.path.startsWith("/api")) {
+      return res.status(404).json({ error: "Not Found" });
+    }
+    
+    // Otherwise serve index.html
+    const indexFile = path.join(process.cwd(), "dist", "spa", "index.html");
+    if (fs.existsSync(indexFile)) {
+      res.sendFile(indexFile);
+    } else {
+      res.status(404).send("App not built correctly (index.html missing)");
+    }
   });
 
   return app;
