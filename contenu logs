@@ -1,0 +1,88 @@
+2026-02-23T18:05:40.662771911Z ==> Downloading cache...
+2026-02-23T18:05:40.705754092Z ==> Cloning from https://github.com/Badior739/portfolio-fini
+2026-02-23T18:05:41.663166176Z ==> Checking out commit 439374fb5df58ad60d20bddd558bd39fedb06749 in branch main
+2026-02-23T18:05:47.113528118Z ==> Downloaded 81MB in 3s. Extraction took 2s.
+2026-02-23T18:05:56.85516928Z ==> Requesting Node.js version 20.x
+2026-02-23T18:05:56.987341822Z ==> Using Node.js version 20.20.0 via /opt/render/project/src/package.json
+2026-02-23T18:05:57.011951984Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2026-02-23T18:05:57.127731817Z ==> Running build command 'npm install --include=dev && npm run build'...
+2026-02-23T18:06:04.728081618Z 
+2026-02-23T18:06:04.728104708Z added 280 packages, and audited 612 packages in 8s
+2026-02-23T18:06:04.72818313Z 
+2026-02-23T18:06:04.72819491Z 110 packages are looking for funding
+2026-02-23T18:06:04.728199471Z   run `npm fund` for details
+2026-02-23T18:06:04.759716166Z 
+2026-02-23T18:06:04.778207816Z 4 vulnerabilities (1 moderate, 3 high)
+2026-02-23T18:06:04.778222846Z 
+2026-02-23T18:06:04.778230547Z To address all issues (including breaking changes), run:
+2026-02-23T18:06:04.778237757Z   npm audit fix --force
+2026-02-23T18:06:04.778243907Z 
+2026-02-23T18:06:04.778251637Z Run `npm audit` for details.
+2026-02-23T18:06:04.94460947Z 
+2026-02-23T18:06:04.944633371Z > build
+2026-02-23T18:06:04.944638471Z > npm run build:client && npm run build:server
+2026-02-23T18:06:04.944642821Z 
+2026-02-23T18:06:05.071626893Z 
+2026-02-23T18:06:05.071651443Z > build:client
+2026-02-23T18:06:05.071656144Z > vite build
+2026-02-23T18:06:05.071660064Z 
+2026-02-23T18:06:05.853112855Z [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+2026-02-23T18:06:05.85452467Z [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+2026-02-23T18:06:05.879294396Z vite v7.3.1 building client environment for production...
+2026-02-23T18:06:06.227057957Z transforming...
+2026-02-23T18:06:08.71313188Z 
+2026-02-23T18:06:08.72678472Z warn - The class `ease-[0.22,1,0.36,1]` is ambiguous and matches multiple utilities.
+2026-02-23T18:06:08.726817361Z warn - If this is content and not a class, replace it with `ease-&lsqb;0.22,1,0.36,1&rsqb;` to silence this warning.
+2026-02-23T18:06:12.044096037Z ✓ 2775 modules transformed.
+2026-02-23T18:06:12.383550901Z rendering chunks...
+2026-02-23T18:06:12.728881802Z computing gzip size...
+2026-02-23T18:06:12.75691079Z dist/spa/index.html                                 2.30 kB │ gzip:   0.83 kB
+2026-02-23T18:06:12.75694158Z dist/spa/assets/index-jb8q45BO.css                144.27 kB │ gzip:  21.09 kB
+2026-02-23T18:06:12.757055523Z dist/spa/assets/SingularityCore-DMw8IVHL.js         2.39 kB │ gzip:   1.01 kB
+2026-02-23T18:06:12.757080944Z dist/spa/assets/ArchitecturalBento-BC5yGP_3.js      2.78 kB │ gzip:   1.15 kB
+2026-02-23T18:06:12.757160966Z dist/spa/assets/Profile3DLayered-CpZbPAle.js        3.41 kB │ gzip:   1.41 kB
+2026-02-23T18:06:12.757178046Z dist/spa/assets/index-BvcWv_qH.js               1,077.89 kB │ gzip: 321.68 kB
+2026-02-23T18:06:12.757376051Z 
+2026-02-23T18:06:12.757382202Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-02-23T18:06:12.757388122Z - Using dynamic import() to code-split the application
+2026-02-23T18:06:12.757406142Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-02-23T18:06:12.757408972Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-02-23T18:06:12.757629228Z ✓ built in 6.85s
+2026-02-23T18:06:12.971913494Z 
+2026-02-23T18:06:12.971951946Z > build:server
+2026-02-23T18:06:12.971956146Z > tsc -p tsconfig.server.json && node scripts/post-build.js
+2026-02-23T18:06:12.971959036Z 
+2026-02-23T18:06:16.137053886Z Created dist/server/package.json with type: commonjs
+2026-02-23T18:06:19.854127139Z ==> Uploading build...
+2026-02-23T18:06:30.123811555Z ==> Uploaded in 5.8s. Compression took 4.4s
+2026-02-23T18:06:30.15413915Z ==> Build successful 🎉
+2026-02-23T18:06:33.511829159Z ==> Deploying...
+2026-02-23T18:06:33.64447292Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-02-23T18:07:04.100323097Z ==> Running 'npm run start'
+2026-02-23T18:07:05.111391136Z 
+2026-02-23T18:07:05.111418997Z > start
+2026-02-23T18:07:05.111422677Z > node dist/server/server/node-build.js
+2026-02-23T18:07:05.111426857Z 
+2026-02-23T18:07:05.408380928Z [dotenv@17.2.3] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+2026-02-23T18:07:07.400946133Z [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+2026-02-23T18:07:10.100289706Z /opt/render/project/src/node_modules/path-to-regexp/dist/index.js:96
+2026-02-23T18:07:10.100318786Z             throw new PathError(`Missing parameter name at index ${index}`, str);
+2026-02-23T18:07:10.100323026Z             ^
+2026-02-23T18:07:10.100326257Z 
+2026-02-23T18:07:10.100330837Z PathError [TypeError]: Missing parameter name at index 1: *; visit https://git.new/pathToRegexpError for info
+2026-02-23T18:07:10.100336307Z     at name (/opt/render/project/src/node_modules/path-to-regexp/dist/index.js:96:19)
+2026-02-23T18:07:10.100339787Z     at parse (/opt/render/project/src/node_modules/path-to-regexp/dist/index.js:113:68)
+2026-02-23T18:07:10.100343347Z     at pathToRegexp (/opt/render/project/src/node_modules/path-to-regexp/dist/index.js:267:58)
+2026-02-23T18:07:10.100346767Z     at Object.match (/opt/render/project/src/node_modules/path-to-regexp/dist/index.js:237:30)
+2026-02-23T18:07:10.100350297Z     at matcher (/opt/render/project/src/node_modules/router/lib/layer.js:86:23)
+2026-02-23T18:07:10.100373568Z     at new Layer (/opt/render/project/src/node_modules/router/lib/layer.js:93:62)
+2026-02-23T18:07:10.100381688Z     at Function.route (/opt/render/project/src/node_modules/router/index.js:428:17)
+2026-02-23T18:07:10.100384998Z     at Function.route (/opt/render/project/src/node_modules/express/lib/application.js:257:22)
+2026-02-23T18:07:10.100388288Z     at app.<computed> [as get] (/opt/render/project/src/node_modules/express/lib/application.js:478:22)
+2026-02-23T18:07:10.100391398Z     at createServer (/opt/render/project/src/dist/server/server/index.js:160:9) {
+2026-02-23T18:07:10.100395028Z   originalPath: '*'
+2026-02-23T18:07:10.100398378Z }
+2026-02-23T18:07:10.100401628Z 
+2026-02-23T18:07:10.100404948Z Node.js v20.20.0
+2026-02-23T18:07:13.969955679Z ==> Exited with status 1
+2026-02-23T18:07:13.971997578Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
