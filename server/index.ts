@@ -169,20 +169,31 @@ export function createServer() {
   });
 
   // Catch-all route for SPA (MUST be after API routes)
-  app.get(/.*/, (req, res) => {
-    // If it's an API call that wasn't handled, 404
-    if (req.path.startsWith("/api")) {
-      return res.status(404).json({ error: "Not Found" });
-    }
-    
-    // Otherwise serve index.html
-    const indexFile = path.join(process.cwd(), "dist", "spa", "index.html");
-    if (fs.existsSync(indexFile)) {
-      res.sendFile(indexFile);
-    } else {
-      res.status(404).send("App not built correctly (index.html missing)");
-    }
-  });
+  // Skip this if we are in BACKEND_ONLY mode (e.g., Vercel Serverless Backend)
+  if (process.env.BACKEND_ONLY !== 'true') {
+    app.get(/.*/, (req, res) => {
+      // If it's an API call that wasn't handled, 404
+      if (req.path.startsWith("/api")) {
+        return res.status(404).json({ error: "Not Found" });
+      }
+      
+      // Otherwise serve index.html
+      const indexFile = path.join(process.cwd(), "dist", "spa", "index.html");
+      if (fs.existsSync(indexFile)) {
+        res.sendFile(indexFile);
+      } else {
+        res.status(404).send("App not built correctly (index.html missing)");
+      }
+    });
+  } else {
+    // In backend-only mode, any non-api route returns 404
+    app.get(/.*/, (req, res) => {
+      res.status(404).json({ 
+        error: "Not Found", 
+        message: "This is a backend-only server. Please use /api/ endpoints." 
+      });
+    });
+  }
 
   return app;
 }
