@@ -108,7 +108,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const loadContent = async () => {
     try {
-      const res = await fetch('/api/admin/content', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/content`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
       const data = (await res.json()) as Partial<SiteData>;
@@ -130,7 +130,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const loadSubscribers = async () => {
     try {
-      const res = await fetch('/api/newsletter/subscribers', {
+      const res = await fetch(`${API_BASE_URL}/api/newsletter/subscribers`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
       const data = await res.json();
@@ -141,7 +141,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
   const saveContent = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/content', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/content`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -187,6 +187,14 @@ export function createServer() {
     });
   } else {
     // In backend-only mode, any non-api route returns 404
+    app.get("/", (req, res) => {
+      res.json({ 
+        status: "online",
+        message: "Cosmos Portfolio API is running.",
+        version: "2.0.0"
+      });
+    });
+
     app.get(/.*/, (req, res) => {
       res.status(404).json({ 
         error: "Not Found", 

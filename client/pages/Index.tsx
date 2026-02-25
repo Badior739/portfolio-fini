@@ -236,7 +236,7 @@ export default function Index() {
       return toast({ title: "Erreur", description: "Les mots de passe ne correspondent pas.", variant: "destructive" });
     }
     try {
-      const res = await fetch('/api/admin/set-password', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/set-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ current: passwords.current, next: passwords.next })
@@ -254,7 +254,7 @@ export default function Index() {
   const handleResetMetrics = async () => {
     if (!window.confirm("Réinitialiser les statistiques ? Cette action est irréversible.")) return;
     try {
-      const res = await fetch('/api/admin/reset-stats', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/reset-stats`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: passwords.current })
