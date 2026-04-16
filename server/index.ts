@@ -171,6 +171,9 @@ export function createServer() {
   // Catch-all route for SPA (MUST be after API routes)
   // Skip this if we are in BACKEND_ONLY mode (e.g., Vercel Serverless Backend)
   if (process.env.BACKEND_ONLY !== 'true') {
+    // Serve static files from the build output
+    app.use(express.static(path.join(process.cwd(), "dist", "spa")));
+    
     app.get(/.*/, (req, res) => {
       // If it's an API call that wasn't handled, 404
       if (req.path.startsWith("/api")) {

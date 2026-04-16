@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Trash2, Download } from 'lucide-react';
+import { Plus, Trash2, Download, Code, FileText, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Project } from '@shared/api';
 import { toast } from '@/hooks/use-toast';
@@ -25,7 +25,8 @@ export function AdminProjects({ projects, setProjects, onSave, loading, isDirty 
         tools: [],
         image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
         year: new Date().getFullYear(),
-        role: ''
+        role: '',
+        content_blocks: []
       },
       ...projects
     ]);
@@ -44,18 +45,41 @@ export function AdminProjects({ projects, setProjects, onSave, loading, isDirty 
     setProjects(newProjects);
   };
 
-  const handleFileUpload = async (index: number, file: File) => {
+  const addContentBlock = (projectIndex: number, type: 'text' | 'image' | 'code') => {
+    const newProjects = [...projects];
+    const project = newProjects[projectIndex];
+    project.content_blocks = [...(project.content_blocks || []), { type, content: '' }];
+    setProjects(newProjects);
+  };
+
+  const updateContentBlock = (projectIndex: number, blockIndex: number, content: string) => {
+    const newProjects = [...projects];
+    newProjects[projectIndex].content_blocks[blockIndex].content = content;
+    setProjects(newProjects);
+  };
+
+  const removeContentBlock = (projectIndex: number, blockIndex: number) => {
+    const newProjects = [...projects];
+    newProjects[projectIndex].content_blocks.splice(blockIndex, 1);
+    setProjects(newProjects);
+  };
+
+  const handleFileUpload = async (index: number, file: File, blockIndex?: number) => {
     const formData = new FormData();
     formData.append('file', file);
     try {
       const res = await fetch(`${API_BASE_URL}/api/uploads`, { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) {
-        updateProject(index, { image: data.url });
-        toast({ title: "Image Projet Uploadée", description: "Le système a synchronisé l'aperçu." });
+        if (blockIndex !== undefined) {
+           updateContentBlock(index, blockIndex, data.url);
+        } else {
+           updateProject(index, { image: data.url });
+        }
+        toast({ title: "Contenu Uploadé", description: "Le système a synchronisé l'élément." });
       }
     } catch (e) {
-      toast({ title: "Erreur", description: "Échec de l'upload de l'image.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Échec de l'upload.", variant: "destructive" });
     }
   };
 
@@ -74,73 +98,55 @@ export function AdminProjects({ projects, setProjects, onSave, loading, isDirty 
 
       <div className="grid grid-cols-1 gap-10">
         {(projects || []).map((project, idx) => (
-          <AdminCard key={project.id} className="group flex flex-col lg:flex-row gap-12 relative overflow-hidden">
-            <div className="w-full lg:w-72 h-48 rounded-[2rem] overflow-hidden border border-white/10 shadow-glow flex-shrink-0 relative group/img">
-              <img 
-                src={project.image} 
-                className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" 
-                alt={project.title} 
-              />
-              <div 
-                className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center cursor-pointer backdrop-blur-sm" 
-                onClick={() => document.getElementById(`project-up-${project.id}`)?.click()}
-              >
-                <Download size={24} className="text-white" />
+          <AdminCard key={project.id} className="group flex flex-col gap-12 relative overflow-hidden">
+            <div className="flex flex-col lg:flex-row gap-12">
+              <div className="w-full lg:w-72 h-48 rounded-[2rem] overflow-hidden border border-white/10 shadow-glow flex-shrink-0 relative group/img">
+                <img 
+                  src={project.image} 
+                  className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" 
+                  alt={project.title} 
+                />
+                <div 
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center cursor-pointer backdrop-blur-sm" 
+                  onClick={() => document.getElementById(`project-up-${project.id}`)?.click()}
+                >
+                  <Download size={24} className="text-white" />
+                </div>
+              </div>
+
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <CMSField label="Titre" value={project.title} onChange={(v) => updateProject(idx, { title: v })} />
+                <CMSField label="Catégorie" value={project.category} onChange={(v) => updateProject(idx, { category: v })} />
+                <CMSField label="Rôle" value={project.role || ""} onChange={(v) => updateProject(idx, { role: v })} />
+                <CMSField label="Année" value={project.year?.toString() || ""} onChange={(v) => updateProject(idx, { year: parseInt(v) || 0 })} />
+                <div className="md:col-span-2">
+                  <CMSField label="Description" isTextArea value={project.description} onChange={(v) => updateProject(idx, { description: v })} />
+                </div>
               </div>
             </div>
 
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <CMSField 
-                label="Identifiant Projet (Titre)" 
-                value={project.title} 
-                onChange={(v) => updateProject(idx, { title: v })} 
-              />
-              <CMSField 
-                label="Catégorie Système" 
-                value={project.category} 
-                onChange={(v) => updateProject(idx, { category: v })} 
-              />
-              <CMSField 
-                label="Rôle / Position" 
-                value={project.role || ""} 
-                onChange={(v) => updateProject(idx, { role: v })} 
-              />
-              <CMSField 
-                label="Année de Livraison" 
-                value={project.year?.toString() || ""} 
-                onChange={(v) => updateProject(idx, { year: parseInt(v) || 0 })} 
-              />
-              <div className="md:col-span-2">
-                <CMSField 
-                  label="Narration Techniques (Description)" 
-                  isTextArea 
-                  value={project.description} 
-                  onChange={(v) => updateProject(idx, { description: v })} 
-                />
+            <div className="space-y-4 pt-8 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">Blocs de contenu enrichi</h3>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => addContentBlock(idx, 'text')}><FileText size={16} className="mr-2"/>Texte</Button>
+                  <Button size="sm" variant="outline" onClick={() => addContentBlock(idx, 'image')}><ImageIcon size={16} className="mr-2"/>Image</Button>
+                  <Button size="sm" variant="outline" onClick={() => addContentBlock(idx, 'code')}><Code size={16} className="mr-2"/>Code</Button>
+                </div>
               </div>
-              <div className="md:col-span-2">
-                <CMSField 
-                  label="Outils & Technologies (Séparés par des virgules)" 
-                  value={project.tools?.join(', ') || ""} 
-                  onChange={(v) => updateProject(idx, { tools: v.split(',').map(t => t.trim()).filter(t => t !== "") })} 
-                />
-              </div>
-              <div className="md:col-span-2">
-                <CMSField 
-                  label="Image Source (URL ou Upload)" 
-                  value={project.image} 
-                  onChange={(v) => updateProject(idx, { image: v })} 
-                />
-              </div>
-              <input 
-                id={`project-up-${project.id}`} 
-                type="file" 
-                className="hidden" 
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleFileUpload(idx, file);
-                }} 
-              />
+              
+              {project.content_blocks?.map((block, bIdx) => (
+                <div key={bIdx} className="flex gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
+                  <div className="flex-1">
+                    {block.type === 'image' ? (
+                       <input className="w-full p-2 bg-transparent border-b" value={block.content} onChange={(e) => updateContentBlock(idx, bIdx, e.target.value)} />
+                    ) : (
+                       <textarea className="w-full p-2 bg-transparent border-b" rows={3} value={block.content} onChange={(e) => updateContentBlock(idx, bIdx, e.target.value)} />
+                    )}
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => removeContentBlock(idx, bIdx)}><Trash2 size={16} className="text-red-500"/></Button>
+                </div>
+              ))}
             </div>
 
             <Button 

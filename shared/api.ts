@@ -39,6 +39,7 @@ export interface Project {
   year: number;
   link?: string;
   github?: string;
+  content_blocks: Array<{type: 'text' | 'image' | 'code', content: string}>;
 }
 
 export interface Testimonial {

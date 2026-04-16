@@ -21,6 +21,7 @@ export const projects = pgTable("projects", {
   link: text("link"),
   github: text("github"),
   displayOrder: integer("display_order").default(0),
+  content_blocks: json("content_blocks").$type<Array<{type: 'text' | 'image' | 'code', content: string}>>().default([]),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

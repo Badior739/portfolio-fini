@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useAdmin } from "@/context/AdminContext";
 import { useSound } from "@/context/SoundContext";
-
+import { useAccessibility } from "@/context/AccessibilityContext";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function CommandPalette() {
@@ -35,6 +35,7 @@ export function CommandPalette() {
   const navigate = useNavigate();
   const { setAdminOpen } = useAdmin();
   const { isEnabled, toggleSound } = useSound();
+  const { reducedMotion, toggleReducedMotion } = useAccessibility();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -109,6 +110,10 @@ export function CommandPalette() {
            <CommandItem onSelect={() => runCommand(toggleSound)}>
             {isEnabled ? <VolumeX className="mr-2 h-4 w-4" /> : <Volume2 className="mr-2 h-4 w-4" />}
             <span>{isEnabled ? t('commandPalette.mute') : t('commandPalette.unmute')}</span>
+          </CommandItem>
+          <CommandItem onSelect={() => runCommand(toggleReducedMotion)}>
+             {reducedMotion ? <Terminal className="mr-2 h-4 w-4" /> : <Terminal className="mr-2 h-4 w-4" />}
+             <span>{reducedMotion ? "Activer les animations" : "Réduire les animations"}</span>
           </CommandItem>
         </CommandGroup>
         

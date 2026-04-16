@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AdminProvider } from "@/context/AdminContext";
 import { SoundProvider } from "@/context/SoundContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { Preloader } from "@/components/ui/Preloader";
 import { ScrollSpy } from "@/components/ui/ScrollSpy";
@@ -27,19 +28,21 @@ const App = () => (
         <AdminProvider>
           <LanguageProvider>
             <SoundProvider>
-              <SEOMetadata />
-              <Preloader />
-              <CustomCursor />
-              <ScrollSpy />
-              <Toaster />
-              {/* <Sonner /> */}
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/case-study" element={<CaseStudy />} />
-                <Route path="/terms" element={<Terms />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AccessibilityProvider>
+                <SEOMetadata />
+                <Preloader />
+                <CustomCursor />
+                <ScrollSpy />
+                <Toaster />
+                {/* <Sonner /> */}
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/case-study" element={<CaseStudy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AccessibilityProvider>
             </SoundProvider>
           </LanguageProvider>
         </AdminProvider>

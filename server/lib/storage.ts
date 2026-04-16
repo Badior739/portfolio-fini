@@ -110,7 +110,8 @@ export async function loadData(): Promise<SiteData> {
         year: p.year,
         role: p.role,
         link: p.link || undefined,
-        github: p.github || undefined
+        github: p.github || undefined,
+        content_blocks: (p.content_blocks as any) || []
       })),
       subscribers: verifiedSubscribers.map(s => ({
         email: s.email,
@@ -276,6 +277,7 @@ export async function updateContent(data: Partial<SiteData>) {
           role: p.role,
           link: p.link,
           github: p.github,
+          content_blocks: p.content_blocks,
           displayOrder: i
         })));
       }

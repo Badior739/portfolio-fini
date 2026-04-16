@@ -14,6 +14,7 @@ import { SkillCard } from "@/components/site/SkillsCard";
 import { HeroArchitectural } from "@/components/site/HeroArchitectural";
 import { AboutArchitectural } from "@/components/site/AboutArchitectural";
 import { ContactForm } from "@/components/site/ContactForm";
+import { LabDemo } from "@/components/site/LabDemo";
 import { AppointmentScheduler } from "@/components/site/AppointmentScheduler";
 import { motion, AnimatePresence, useScroll, useSpring, useTransform } from "framer-motion";
 import { ArrowUp, Filter, Briefcase, GraduationCap, Mail, MapPin, ArrowRight, Github, Linkedin, Terminal, Code, Cpu, Globe, ExternalLink, Zap, Box, Layers, ArrowUpRight, Clock, Video } from "lucide-react";
@@ -611,6 +612,8 @@ export default function Index() {
                </Button>
              </div>
           </div>
+
+          <LabDemo />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 mt-24">
             {(t('impact.stats') as any[] || []).map((stat, i) => (

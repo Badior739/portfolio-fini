@@ -5,17 +5,20 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Export a function to get DB or check if configured
 export const isDbConfigured = () => !!process.env.DATABASE_URL;
 
 let _db: NodePgDatabase<typeof schema> | null = null;
 
 if (process.env.DATABASE_URL) {
-  const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-  });
-  _db = drizzle(pool, { schema });
+  try {
+    const pool = new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+    });
+    _db = drizzle(pool, { schema });
+  } catch (e) {
+    console.error("Failed to connect to database, falling back to JSON storage:", e);
+  }
 }
 
 export const db = _db;
