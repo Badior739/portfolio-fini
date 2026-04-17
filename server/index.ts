@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config({ override: true });
+import os from "os";
 import { sql } from "drizzle-orm";
 import express from "express";
 import cors from "cors";
@@ -144,7 +145,7 @@ export function createServer() {
     
     // Serve uploaded files - Safely for Vercel
     try {
-      const uploadDir = path.join(require('os').tmpdir(), 'uploads');
+      const uploadDir = path.join(os.tmpdir(), 'uploads');
       // Only attempt to serve if directory exists, or just define it (express.static is safe if dir doesn't exist)
       app.use('/uploads', express.static(uploadDir));
     } catch (e) {
