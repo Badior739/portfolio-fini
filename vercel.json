@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/spa",
   "functions": {
     "api/index.ts": {
       "memory": 512,
