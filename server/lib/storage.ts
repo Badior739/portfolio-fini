@@ -98,34 +98,34 @@ export async function loadData(): Promise<SiteData> {
         description: s.description || "",
         expertise: (s.expertise as ExpertiseLevel) || "Expert",
         level: s.level || 0,
-        color: (s.color as any) || { from: "#333", to: "#000", accent: "#fff" },
+        color: (JSON.parse(s.color as unknown as string)) as any,
       })),
       projects: allProjects.map(p => ({
         id: p.id,
         title: p.title,
         category: p.category,
         description: p.description,
-        tools: (p.tools as string[]) || [],
+        tools: (JSON.parse(p.tools as unknown as string)) as string[],
         image: p.image,
         year: p.year,
         role: p.role,
         link: p.link || undefined,
         github: p.github || undefined,
-        content_blocks: (p.content_blocks as any) || []
+        content_blocks: (JSON.parse(p.content_blocks as unknown as string)) as any
       })),
       subscribers: verifiedSubscribers.map(s => ({
         email: s.email,
-        date: s.createdAt ? s.createdAt.toISOString() : new Date().toISOString()
+        date: s.createdAt || new Date().toISOString()
       })),
       pendingSubscribers: pendingSubscribers.map(s => ({
         email: s.email,
         token: s.verificationToken || "",
-        expires: s.tokenExpires ? s.tokenExpires.getTime() : 0
+        expires: s.tokenExpires ? new Date(s.tokenExpires).getTime() : 0
       })),
       messages: allStats.reduce((acc, curr) => acc + (curr.messageCount || 0), 0),
       receivedMessages: allMessages.map(m => ({
         id: m.id,
-        date: m.date ? m.date.toISOString() : new Date().toISOString(),
+        date: m.date || new Date().toISOString(),
         name: m.name,
         email: m.email,
         message: m.message,
@@ -134,7 +134,7 @@ export async function loadData(): Promise<SiteData> {
         projectType: m.projectType || undefined,
         budget: m.budget || undefined,
         timeline: m.timeline || undefined,
-        recruitment: m.recruitment || false
+        recruitment: m.recruitment === 1
       })),
       experiences: allExperiences.map(e => ({
         id: e.id,
@@ -143,7 +143,7 @@ export async function loadData(): Promise<SiteData> {
         company: e.company,
         description: e.description || "",
         icon: e.icon || "",
-        technologies: (e.technologies as string[]) || [],
+        technologies: (JSON.parse(e.technologies as unknown as string)) as string[],
       })),
       testimonials: allTestimonials.map(t => ({
         id: t.id,
@@ -161,11 +161,11 @@ export async function loadData(): Promise<SiteData> {
       })),
       visits: allStats.reduce((acc, curr) => acc + (curr.visits || 0), 0),
       
-      hero: (configHero?.value as any) || {},
-      about: (configAbout?.value as any) || {},
-      contact: (configContact?.value as any) || {},
-      settings: (configSettings?.value as any) || { siteTitle: "", siteDescription: "", siteKeywords: "", enable2FA: true },
-      bento: (configBento?.value as any) || [],
+      hero: (configHero ? JSON.parse(configHero.value as string) : {}) as any,
+      about: (configAbout ? JSON.parse(configAbout.value as string) : {}) as any,
+      contact: (configContact ? JSON.parse(configContact.value as string) : {}) as any,
+      settings: (configSettings ? JSON.parse(configSettings.value as string) : {}) as any,
+      bento: (configBento ? JSON.parse(configBento.value as string) : []) as any,
       
       appointments: allAppointments.map(a => ({
         id: a.id,
@@ -175,9 +175,9 @@ export async function loadData(): Promise<SiteData> {
         email: a.email,
         topic: a.topic,
         status: (a.status as any) || 'pending',
-        createdAt: a.createdAt ? a.createdAt.toISOString() : new Date().toISOString()
+        createdAt: a.createdAt || new Date().toISOString()
       })),
-      admin: configAdmin ? (configAdmin.value as unknown as Admin) : undefined,
+      admin: configAdmin ? (JSON.parse(configAdmin.value as string) as Admin) : undefined,
     };
   } catch (e) {
     console.error("DB Load Error:", e);
@@ -201,11 +201,11 @@ export async function addSubscriber(email: string, token?: string, expires?: num
   
   await db.insert(subscribers).values({
     email,
-    verified: !token,
+    verified: token ? 0 : 1,
     verificationToken: token,
-    tokenExpires: expires ? new Date(expires) : null,
-    createdAt: new Date()
-  }).onConflictDoNothing();
+    tokenExpires: expires ? new Date(expires).toISOString() : null,
+    createdAt: new Date().toISOString()
+  });
 }
 
 export async function removeSubscriber(email: string) {
@@ -235,7 +235,7 @@ export async function confirmSubscriber(token: string): Promise<string | null> {
   }
 
   const result = await db.update(subscribers)
-    .set({ verified: true, verificationToken: null, tokenExpires: null })
+    .set({ verified: 1, verificationToken: null, tokenExpires: null })
     .where(eq(subscribers.verificationToken, token))
     .returning();
   
@@ -251,23 +251,21 @@ export async function updateContent(data: Partial<SiteData>) {
   }
 
   try {
-    // Handle Configs
-    if (data.hero) await db.insert(siteConfig).values({ key: 'hero', value: data.hero }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.hero } });
-    if (data.about) await db.insert(siteConfig).values({ key: 'about', value: data.about }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.about } });
-    if (data.contact) await db.insert(siteConfig).values({ key: 'contact', value: data.contact }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.contact } });
-    if (data.settings) await db.insert(siteConfig).values({ key: 'settings', value: data.settings }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.settings } });
-    if (data.bento) await db.insert(siteConfig).values({ key: 'bento', value: data.bento }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.bento } });
+    if (data.hero) await db.insert(siteConfig).values({ key: 'hero', value: JSON.stringify(data.hero) }).onConflictDoUpdate({ target: siteConfig.key, set: { value: JSON.stringify(data.hero) } });
+    if (data.about) await db.insert(siteConfig).values({ key: 'about', value: JSON.stringify(data.about) }).onConflictDoUpdate({ target: siteConfig.key, set: { value: JSON.stringify(data.about) } });
+    if (data.contact) await db.insert(siteConfig).values({ key: 'contact', value: JSON.stringify(data.contact) }).onConflictDoUpdate({ target: siteConfig.key, set: { value: JSON.stringify(data.contact) } });
+    if (data.settings) await db.insert(siteConfig).values({ key: 'settings', value: JSON.stringify(data.settings) }).onConflictDoUpdate({ target: siteConfig.key, set: { value: JSON.stringify(data.settings) } });
+    if (data.bento) await db.insert(siteConfig).values({ key: 'bento', value: JSON.stringify(data.bento) }).onConflictDoUpdate({ target: siteConfig.key, set: { value: JSON.stringify(data.bento) } });
     
     if (data.admin) {
-      await db.insert(siteConfig).values({ key: 'admin', value: data.admin }).onConflictDoUpdate({ target: siteConfig.key, set: { value: data.admin } });
+      await db.insert(siteConfig).values({ key: 'admin', value: JSON.stringify(data.admin) }).onConflictDoUpdate({ target: siteConfig.key, set: { value: JSON.stringify(data.admin) } });
     }
 
-    // Handle Projects
     if (data.projects) {
       await db.delete(projects);
       if (data.projects.length > 0) {
         await db.insert(projects).values(data.projects.map((p, i) => ({
-          id: p.id,
+          id: p.id as string,
           title: p.title,
           category: p.category,
           description: p.description,
@@ -275,31 +273,29 @@ export async function updateContent(data: Partial<SiteData>) {
           image: p.image,
           year: p.year,
           role: p.role,
-          link: p.link,
-          github: p.github,
-          content_blocks: p.content_blocks,
+          link: p.link || null,
+          github: p.github || null,
+          content_blocks: p.content_blocks || [],
           displayOrder: i
         })));
       }
     }
 
-    // Handle Skills
     if (data.skills) {
       await db.delete(skills);
       if (data.skills.length > 0) {
         await db.insert(skills).values(data.skills.map((s, i) => ({
           name: s.name,
           icon: s.icon,
-          description: s.description,
-          expertise: s.expertise,
-          level: s.level,
+          description: s.description || null,
+          expertise: s.expertise || null,
+          level: s.level || 0,
           color: s.color,
           displayOrder: i
         })));
       }
     }
 
-    // Handle Experiences
     if (data.experiences) {
       await db.delete(experiences);
       if (data.experiences.length > 0) {
@@ -308,14 +304,13 @@ export async function updateContent(data: Partial<SiteData>) {
           year: e.year,
           role: e.role,
           company: e.company,
-          description: e.description || "",
-          icon: e.icon || "",
-          technologies: (e.technologies as string[]) || [],
+          description: e.description || null,
+          icon: e.icon || null,
+          technologies: e.technologies || [],
         })));
       }
     }
 
-    // Handle Testimonials
     if (data.testimonials) {
       await db.delete(testimonials);
       if (data.testimonials.length > 0) {
@@ -323,15 +318,15 @@ export async function updateContent(data: Partial<SiteData>) {
           id: t.id,
           name: t.name,
           role: t.role,
-          company: t.company || "",
+          company: t.company || null,
           content: t.content,
-          avatar: t.avatar || "",
+          avatar: t.avatar || null,
         })));
       }
     }
   } catch (e) {
     console.error("Failed to update content in DB:", e);
-    throw e; // Re-throw to let the caller handle it or global handler catch it
+    throw e;
   }
 }
 
@@ -350,37 +345,28 @@ export async function addAppointment(apt: Appointment) {
     name: apt.name,
     email: apt.email,
     topic: apt.topic,
-    status: apt.status,
-    createdAt: new Date(apt.createdAt)
+    status: apt.status || 'pending',
+    createdAt: new Date(apt.createdAt).toISOString()
   });
 }
 
 export async function incrementVisits() {
+  const today = new Date().toISOString().split('T')[0];
   if (!isDbConfigured() || !db) {
     const data = getJsonData();
     data.visits += 1;
-    
-    const today = new Date().toISOString().split('T')[0];
     const historyEntry = data.statsHistory?.find(h => h.date === today);
-    
     if (historyEntry) {
       historyEntry.visits += 1;
     } else {
       if (!data.statsHistory) data.statsHistory = [];
-      data.statsHistory.push({
-        date: today,
-        visits: 1,
-        messages: 0,
-        subscribers: 0
-      });
+      data.statsHistory.push({ date: today, visits: 1, messages: 0, subscribers: 0 });
       if (data.statsHistory.length > 30) data.statsHistory.shift();
     }
-    
     saveJsonData(data);
     return data.visits;
   }
 
-  const today = new Date().toISOString().split('T')[0];
   await db.insert(stats).values({ 
     date: today, 
     visits: 1, 
@@ -388,7 +374,7 @@ export async function incrementVisits() {
     subscriberCount: 0 
   }).onConflictDoUpdate({
     target: stats.date,
-    set: { visits: sql`${stats.visits} + 1` }
+    set: { visits: sql`visits + 1` }
   });
   
   const allStats = await db.select().from(stats);
@@ -396,31 +382,22 @@ export async function incrementVisits() {
 }
 
 export async function incrementMessages() {
+  const today = new Date().toISOString().split('T')[0];
   if (!isDbConfigured() || !db) {
     const data = getJsonData();
     data.messages += 1;
-    
-    const today = new Date().toISOString().split('T')[0];
     const historyEntry = data.statsHistory?.find(h => h.date === today);
-    
     if (historyEntry) {
       historyEntry.messages += 1;
     } else {
       if (!data.statsHistory) data.statsHistory = [];
-      data.statsHistory.push({
-        date: today,
-        visits: 0,
-        messages: 1,
-        subscribers: 0
-      });
+      data.statsHistory.push({ date: today, visits: 0, messages: 1, subscribers: 0 });
       if (data.statsHistory.length > 30) data.statsHistory.shift();
     }
-    
     saveJsonData(data);
     return data.messages;
   }
 
-  const today = new Date().toISOString().split('T')[0];
   await db.insert(stats).values({ 
     date: today, 
     visits: 0, 
@@ -428,7 +405,7 @@ export async function incrementMessages() {
     subscriberCount: 0 
   }).onConflictDoUpdate({
     target: stats.date,
-    set: { messageCount: sql`${stats.messageCount} + 1` }
+    set: { messageCount: sql`message_count + 1` }
   });
 
   const allStats = await db.select().from(stats);
@@ -441,14 +418,6 @@ export async function addMessage(msg: ReceivedMessage) {
     data.receivedMessages = data.receivedMessages || [];
     data.receivedMessages.push(msg);
     data.messages += 1;
-    const today = new Date().toISOString().split('T')[0];
-    const historyEntry = data.statsHistory?.find(h => h.date === today);
-    if (historyEntry) {
-      historyEntry.messages += 1;
-    } else {
-      if (!data.statsHistory) data.statsHistory = [];
-      data.statsHistory.push({ date: today, visits: 0, messages: 1, subscribers: 0 });
-    }
     saveJsonData(data);
     return;
   }
@@ -457,27 +426,20 @@ export async function addMessage(msg: ReceivedMessage) {
     name: msg.name,
     email: msg.email,
     message: msg.message,
-    company: msg.company,
-    projectType: msg.projectType,
-    budget: msg.budget,
-    timeline: msg.timeline,
-    recruitment: msg.recruitment,
-    date: new Date(msg.date),
-    status: msg.status
+    company: msg.company || null,
+    projectType: msg.projectType || null,
+    budget: msg.budget || null,
+    timeline: msg.timeline || null,
+    recruitment: msg.recruitment ? 1 : 0,
+    date: msg.date,
+    status: msg.status || 'unread'
   });
   
   await incrementMessages();
 }
 
 export async function resetStats() {
-  if (!isDbConfigured() || !db) {
-    const data = getJsonData();
-    data.visits = 0;
-    data.messages = 0;
-    data.statsHistory = [];
-    saveJsonData(data);
-    return;
+  if (db) {
+    await db.delete(stats);
   }
-  
-  await db.delete(stats);
 }

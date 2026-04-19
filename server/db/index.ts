@@ -5,3 +5,4 @@ import path from 'path';
 
 const sqlite = new Database(path.join(process.cwd(), 'portfolio.db'));
 export const db = drizzle(sqlite, { schema });
+export const isDbConfigured = () => true;

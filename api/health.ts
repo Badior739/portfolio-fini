@@ -1,8 +1,5 @@
 import { RequestHandler } from "express";
 import { db } from "../server/db";
-import { sql } from "drizzle-orm";
-
-const isDbConfigured = () => !!process.env.DATABASE_URL;
 
 export default async function handler(req: any, res: any) {
   const status: any = {
@@ -10,7 +7,6 @@ export default async function handler(req: any, res: any) {
     timestamp: Date.now(),
     env: {
       node_env: process.env.NODE_ENV,
-      db_configured: isDbConfigured(),
       storage_type: process.env.STORAGE_TYPE || 'unknown',
       vercel: !!process.env.VERCEL
     },
@@ -19,9 +15,8 @@ export default async function handler(req: any, res: any) {
   };
 
   try {
-    if (isDbConfigured() && db) {
-      // Simple query to check connection
-      await db.execute(sql`SELECT 1`);
+    if (db) {
+      (db as any).$client.prepare('SELECT 1').run();
       status.db_connection = 'connected';
     } else {
       status.db_connection = 'not_configured';
