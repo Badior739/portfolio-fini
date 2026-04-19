@@ -1,18 +1,12 @@
-
 import { db } from "../server/db";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 
 async function runMigrate() {
-  if (!process.env.DATABASE_URL) {
-    console.error("❌ DATABASE_URL is not set");
-    process.exit(1);
-  }
-
   console.log("⏳ Running migrations...");
 
   try {
     // This will automatically run needed migrations on the database
-    await migrate(db!, { migrationsFolder: "drizzle" });
+    await migrate(db as any, { migrationsFolder: "drizzle" });
     console.log("✅ Migrations completed!");
     process.exit(0);
   } catch (error) {

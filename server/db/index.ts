@@ -1,24 +1,7 @@
-import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
-import pg from 'pg';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
 import * as schema from './schema';
-import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
-
-export const isDbConfigured = () => !!process.env.DATABASE_URL;
-
-let _db: NodePgDatabase<typeof schema> | null = null;
-
-if (process.env.DATABASE_URL) {
-  try {
-    const pool = new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-    });
-    _db = drizzle(pool, { schema });
-  } catch (e) {
-    console.error("Failed to connect to database, falling back to JSON storage:", e);
-  }
-}
-
-export const db = _db;
+const sqlite = new Database(path.join(process.cwd(), 'portfolio.db'));
+export const db = drizzle(sqlite, { schema });
