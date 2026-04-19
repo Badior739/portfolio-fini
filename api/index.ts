@@ -1,6 +1,7 @@
 
 import type { Request, Response } from 'express';
-import { createServer } from '../server/index';
+// Import depuis le dossier de build généré par tsc
+import { createServer } from '../dist/server/server/index'; 
 
 let cachedApp: any;
 
@@ -14,12 +15,7 @@ export default async function handler(req: Request, res: Response) {
     console.error('Server Startup Error:', e);
     res.status(500).json({
       error: 'Server Startup Failed',
-      message: e.message,
-      stack: e.stack,
-      env: {
-        node_env: process.env.NODE_ENV,
-        has_db_url: !!process.env.DATABASE_URL
-      }
+      message: e.message
     });
   }
 }
