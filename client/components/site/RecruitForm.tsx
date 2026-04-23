@@ -9,10 +9,7 @@ import { API_BASE_URL } from "@/config";
 
 // Temporary inline components due to file corruption issues
 const toast = ({ title, description }: { title?: string; description?: string }) => {
-  console.log("Toast:", title, description);
-  // In a real deployment, this would use a proper toast system.
-  // For now, we use alert for visibility if needed, or just log.
-  // alert(`${title}\n${description}`);
+  alert(`${title}\n${description}`);
 };
 
 const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string; asChild?: boolean }>(

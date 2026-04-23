@@ -18,9 +18,7 @@
    - Remplacez `your_actual_access_key_here` par votre clé réelle
    - Exemple :
      ```
-     VITE_WEB3FORMS_KEY=abc123def456xyz789...
-     ```
-
+     VITE_WEB3FORMS_KEY=76ac235a-f942-4efa-b257-95c1d9d7e03bs
 ### 4. **Vérifier la configuration**
    - Redémarrez le serveur de développement : `pnpm dev`
    - Testez le formulaire de contact
