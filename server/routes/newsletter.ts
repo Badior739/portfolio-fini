@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 import { createTransporter } from "../config/smtp";
 import { EmailTemplates } from "../lib/email-templates";
 import { 
