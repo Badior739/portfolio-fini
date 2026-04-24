@@ -43,7 +43,25 @@ export function createServer() {
   app.post("/api/recruit", uploadHandler, handleRecruitPost);
   app.post("/api/contact", handleContactSubmission);
   app.post("/api/appointment", handleAppointmentSubmission);
+  
+  // Newsletter
   app.post("/api/newsletter/subscribe", rateLimit({ windowMs: 60_000, max: 6 }), handleSubscribe);
+  app.get("/api/newsletter/subscribers", authMiddleware, handleGetSubscribers);
+  app.delete("/api/newsletter/unsubscribe/:id", handleRemoveSubscriber);
+  app.get("/api/newsletter/confirm/:id", handleConfirm);
+
+  // Admin & Content
+  app.post("/api/admin/login", handleAdminLogin);
+  app.post("/api/admin/verify-2fa", handleAdminVerify2FA);
+  app.post("/api/admin/setup", handleAdminSetup);
+  app.get("/api/admin/stats", authMiddleware, handleGetStats);
+  app.post("/api/admin/visit", handleIncrementVisit);
+  app.post("/api/admin/message", handleIncrementMessage);
+  app.post("/api/admin/reply", authMiddleware, handleAdminReply);
+  app.get("/api/content", handleGetPublicContent);
+  app.get("/api/content/all", authMiddleware, handleGetContent);
+  app.post("/api/content/save", authMiddleware, handleSaveContent);
+  app.post("/api/admin/reset", authMiddleware, handleResetStats);
 
   // Routes protégées ou spécifiques
   app.get('/api/files/:id', handleGetFile);

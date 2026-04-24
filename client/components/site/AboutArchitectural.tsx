@@ -52,7 +52,7 @@ export function AboutArchitectural({ data, bento }: { data?: AboutContent; bento
       </div>
 
       {/* 11. Premium Grain Texture Overlay */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-soft-light" />
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10 pointer-events-none mix-blend-soft-light" />
 
       <div className="container relative z-10 px-4">
         <div className="flex flex-col mb-16 md:mb-32">

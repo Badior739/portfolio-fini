@@ -113,7 +113,7 @@ export function ProjectCard3D({ project, index, onHoverStart, onHoverEnd, isFocu
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-700" />
           
           {/* Noise Texture Overlay */}
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
         </div>
 
         {/* Content Container */}
