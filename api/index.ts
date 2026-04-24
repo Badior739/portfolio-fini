@@ -1,7 +1,7 @@
 
 import type { Request, Response } from 'express';
 // Import depuis le dossier de build généré par tsc
-import { createServer } from '../dist/server/server/index.js'; 
+import { createServer } from '../dist/server/server/index'; 
 
 let cachedApp: any;
 
