@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-const crypto = require("node:crypto");
+import crypto from "node:crypto";
 import { createTransporter } from "../config/smtp";
 import { Admin, ContactFormData, ReceivedMessage, SiteData, StatsEntry, Appointment } from "../../shared/api";
 import { signToken } from "../middleware/auth";
