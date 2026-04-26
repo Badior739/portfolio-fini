@@ -18,27 +18,32 @@ export function Footer() {
     }
     
     try {
-      console.log('Subscribing to:', `${API_BASE_URL}/api/newsletter/subscribe`);
-      const res = await fetch(`${API_BASE_URL}/api/newsletter/subscribe`, {
+      const formData = new FormData();
+      formData.append("access_key", import.meta.env.VITE_WEB3FORMS_KEY || "");
+      formData.append("subject", "Nouvel abonné Newsletter");
+      formData.append("email", email);
+      formData.append("message", `Nouvelle inscription à la newsletter : ${email}`);
+      formData.append("from_name", "Portfolio Newsletter");
+
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: formData,
       });
+
       const data = await res.json();
-      console.log('Newsletter subscription response:', res.status, JSON.stringify(data));
-      if (res.ok) {
+
+      if (data.success) {
         toast({ title: t('footer.successTitle'), description: t('footer.successDesc') });
         setEmail("");
       } else {
-        console.error('Newsletter error:', JSON.stringify(data));
-        toast({ 
-          title: data.message === 'Cet email est déjà inscrit' ? "Déjà inscrit" : t('footer.errorTitle'), 
-          description: data.message || t('footer.errorDesc'),
-          variant: "destructive"
-        });
+        throw new Error(data.message || "Erreur lors de l'envoi");
       }
     } catch (error) {
-      toast({ title: t('footer.subscribeErrorTitle'), description: t('footer.subscribeErrorDesc') });
+      toast({ 
+        title: t('footer.subscribeErrorTitle'), 
+        description: t('footer.subscribeErrorDesc'),
+        variant: "destructive"
+      });
     }
   };
 
