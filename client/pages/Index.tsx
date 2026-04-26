@@ -112,7 +112,10 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/admin/visit`, { method: 'POST' }).catch(() => {});
+    fetch(`${API_BASE_URL}/api/admin/visit`, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).catch(() => {});
 
     const fetchData = async () => {
       setLoading(true);

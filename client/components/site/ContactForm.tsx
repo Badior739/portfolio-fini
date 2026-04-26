@@ -31,22 +31,15 @@ export function ContactForm({ data }: { data?: ContactInfo }) {
     setStatus("sending");
     
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("message", formData.message);
-      formDataToSend.append("access_key", import.meta.env.VITE_WEB3FORMS_KEY || "");
-      formDataToSend.append("from_name", "Portfolio Cosmos");
-      formDataToSend.append("subject", `Nouveau Message de ${formData.name}`);
-
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        body: formDataToSend,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok) {
         setStatus("success");
         setTimeout(() => setStatus("idle"), 8000);
         setFormData({ 
@@ -56,7 +49,7 @@ export function ContactForm({ data }: { data?: ContactInfo }) {
         });
       } else {
         setStatus("error");
-        toast({ title: t('contact.toast.signalErrorTitle'), description: data.message || t('contact.toast.signalErrorDesc') });
+        toast({ title: t('contact.toast.signalErrorTitle'), description: data.error || t('contact.toast.signalErrorDescription') });
       }
     } catch (err) {
       console.error("Contact Form Error:", err);
