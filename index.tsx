@@ -14,10 +14,10 @@ import { CustomCursor } from "@/components/ui/CustomCursor";
 import { Preloader } from "@/components/ui/Preloader";
 import { ScrollSpy } from "@/components/ui/ScrollSpy";
 import { SEOMetadata } from "@/components/site/SEOMetadata";
-import Index from "./pages/Index";
-import CaseStudy from "./pages/CaseStudy";
-import Terms from "./pages/Terms";
-import NotFound from "./pages/NotFound";
+import Index from "./client/pages/Index";
+import CaseStudy from "./client/pages/CaseStudy";
+import Terms from "./client/pages/Terms";
+import NotFound from "./client/pages/NotFound";
 
 const queryClient = new QueryClient();
 
