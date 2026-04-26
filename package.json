@@ -84,6 +84,7 @@
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.6",
     "@types/node": "^20.19.39",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
