@@ -69,19 +69,24 @@ export function AppointmentScheduler() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/appointment`, {
+      const fd = new FormData();
+      fd.append("access_key", import.meta.env.VITE_WEB3FORMS_KEY || "");
+      fd.append("subject", "Nouvelle demande de rendez-vous");
+      fd.append("name", formData.name);
+      fd.append("email", formData.email);
+      fd.append("topic", formData.topic);
+      fd.append("date", selectedDate.toLocaleDateString());
+      fd.append("time", selectedTime);
+      fd.append("message", `Rendez-vous demandé le ${selectedDate.toLocaleDateString()} à ${selectedTime}. Sujet: ${formData.topic}`);
+
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          date: selectedDate.toISOString(),
-          time: selectedTime
-        })
+        body: fd
       });
 
       const data = await res.json();
-      console.log('Appointment response:', res.status, JSON.stringify(data));
-      if (res.ok) {
+      
+      if (data.success) {
         setStep(4);
         toast({
           title: t('appointment.scheduler.toast.confirmed'),
