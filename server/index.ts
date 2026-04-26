@@ -38,6 +38,8 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  console.log("Environment check: WEB3FORMS_KEY is", process.env.VITE_WEB3FORMS_KEY ? "SET" : "MISSING");
+
   // Routes API
   app.get("/api/health", handleHealthCheck);
   app.post("/api/recruit", uploadHandler, handleRecruitPost);
