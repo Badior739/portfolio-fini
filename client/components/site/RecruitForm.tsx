@@ -71,26 +71,30 @@ export function RecruitForm({ open, onClose }: { open: boolean; onClose: () => v
     
     try {
       const fd = new FormData();
+      fd.append("access_key", import.meta.env.VITE_WEB3FORMS_KEY || "");
+      fd.append("subject", `Nouvelle candidature : ${formData.position || "Spontanée"}`);
       fd.append("name", formData.name);
       fd.append("email", formData.email);
-      fd.append("phone", formData.phone || "");
-      fd.append("company", formData.company || "");
-      fd.append("position", formData.position || "");
+      fd.append("phone", formData.phone || "Non spécifié");
+      fd.append("company", formData.company || "Non spécifié");
+      fd.append("position", formData.position || "Spontanée");
       fd.append("projectType", formData.projectType);
       fd.append("budget", formData.budget);
       fd.append("timeline", formData.timeline);
       fd.append("message", formData.message);
-      if (file) fd.append("file", file);
+      
+      if (file) {
+        fd.append("attachment", file);
+      }
 
-      const response = await fetch(`${API_BASE_URL}/api/recruit`, {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: fd,
       });
 
       const data = await response.json();
-      console.log('Recruit response:', response.status, JSON.stringify(data));
 
-      if (response.ok || response.status === 202) {
+      if (data.success) {
         toast({ 
           title: t('recruit.toast.signalReceivedTitle'), 
           description: t('recruit.toast.signalReceivedDesc') 
@@ -109,11 +113,14 @@ export function RecruitForm({ open, onClose }: { open: boolean; onClose: () => v
         setFile(null);
         setTimeout(onClose, 2000);
       } else {
-        toast({ title: t('recruit.toast.signalInterruptedTitle'), description: data.message || t('recruit.toast.signalInterruptedDesc') });
+        throw new Error(data.message || t('recruit.toast.signalInterruptedDesc'));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Recruit Form Error:", err);
-      toast({ title: t('recruit.toast.systemErrorTitle'), description: t('recruit.toast.systemErrorDesc') });
+      toast({ 
+        title: t('recruit.toast.systemErrorTitle'), 
+        description: err.message || t('recruit.toast.systemErrorDesc') 
+      });
     } finally {
       setSending(false);
     }
