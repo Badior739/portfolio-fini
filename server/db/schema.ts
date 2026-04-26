@@ -1,4 +1,4 @@
-import { pgTable, text, integer, serial, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, serial, jsonb } from "drizzle-orm/pg-core";
 
 export const subscribers = pgTable("subscribers", {
   id: serial("id").primaryKey(),
@@ -14,14 +14,14 @@ export const projects = pgTable("projects", {
   title: text("title").notNull(),
   category: text("category").notNull(),
   description: text("description").notNull(),
-  tools: text("tools").array().notNull(),
+  tools: jsonb("tools").$type<string[]>().notNull(),
   image: text("image").notNull(),
   year: integer("year").notNull(),
   role: text("role").notNull(),
   link: text("link"),
   github: text("github"),
   displayOrder: integer("display_order").default(0),
-  content_blocks: text("content_blocks").array().default([]),
+  content_blocks: jsonb("content_blocks").$type<Array<{type: 'text' | 'image' | 'code', content: string}>>().default([]),
   createdAt: text("created_at"),
 });
 
@@ -42,7 +42,7 @@ export const skills = pgTable("skills", {
   icon: text("icon").notNull(),
   level: integer("level").default(0),
   category: text("category").default("other"),
-  color: text("color").notNull(),
+  color: jsonb("color").$type<{ from: string; to: string; accent: string }>().notNull(),
   displayOrder: integer("display_order").default(0),
 });
 
@@ -62,7 +62,7 @@ export const messages = pgTable("messages", {
 
 export const siteConfig = pgTable("site_config", {
   key: text("key").primaryKey(),
-  value: text("value").notNull(),
+  value: jsonb("value").notNull(),
 });
 
 export const experiences = pgTable("experiences", {
@@ -72,7 +72,7 @@ export const experiences = pgTable("experiences", {
   company: text("company").notNull(),
   description: text("description"),
   icon: text("icon"),
-  technologies: text("technologies").array(),
+  technologies: jsonb("technologies").$type<string[]>(),
 });
 
 export const testimonials = pgTable("testimonials", {
