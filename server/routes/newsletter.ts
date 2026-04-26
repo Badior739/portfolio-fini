@@ -94,9 +94,9 @@ export const handleSubscribe: RequestHandler = async (req, res) => {
             html: EmailTemplates.newsletterConfirmation(confirmUrl)
           });
           return res.json({ success: true, message: 'Email de confirmation envoyé (double opt-in).' });
-        } catch (err) {
-          console.error('Failed to send confirmation email, falling back to dev URL:', err);
-          // fallthrough to return confirmUrl
+        } catch (err: any) {
+          console.error('Failed to send confirmation email:', err);
+          return res.status(500).json({ success: false, message: 'SMTP Error: ' + (err.message || 'Unknown error') });
         }
       }
 
