@@ -67,7 +67,13 @@ export const translations = {
         signalInterruptedTitle: "Signal Interrompu",
         signalInterruptedDesc: "Échec de la transmission.",
         systemErrorTitle: "Erreur Système",
-        systemErrorDesc: "La liaison avec le service de transmission a été perdue."
+        systemErrorDesc: "La liaison avec le service de transmission a été perdue.",
+        signalErrorTitle: "Erreur d'envoi",
+        signalErrorDescription: "Une erreur est survenue. Réessayez.",
+        signalSuccessTitle: "Message envoyé !",
+        signalSuccessDescription: "Je vous réponds sous 24h.",
+        networkErrorTitle: "Erreur réseau",
+        networkErrorDesc: "Impossible de contacter le serveur."
       }
     },
     contact: {
