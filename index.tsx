@@ -1,4 +1,4 @@
-import \"./client/global.css\";
+import "./client/global.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
